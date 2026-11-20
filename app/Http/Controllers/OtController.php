@@ -21,8 +21,7 @@ class OtController extends Controller
 
     private function period(Request $request): array
     {
-        $ym = $request->input('period') ?: working_period()->format('Y-m');
-        $d = Carbon::createFromFormat('Y-m-d', $ym.'-01');
+        $d = request_period($request);
 
         return [(int) $d->year, (int) $d->month];
     }
@@ -205,14 +204,15 @@ class OtController extends Controller
     /** OT history for a period range, one row per employee and month columns. */
     public function history(Request $request)
     {
-        $from = Carbon::createFromFormat('Y-m-d', $request->input('from', now()->subMonths(5)->format('Y-m')).'-01');
-        $to = Carbon::createFromFormat('Y-m-d', $request->input('to', now()->format('Y-m')).'-01');
-        if ($to->lt($from)) {
-            [$from, $to] = [$to, $from];
+        // the whole selected year (Jan - Dec), or a month range inside it
+        $year = (int) ($request->input('year') ?: active_year());
+        $fm = min(12, max(1, (int) $request->input('from_month', 1)));
+        $tm = min(12, max(1, (int) $request->input('to_month', 12)));
+        if ($tm < $fm) {
+            [$fm, $tm] = [$tm, $fm];
         }
-        if ($from->diffInMonths($to) > 23) {
-            $from = $to->copy()->subMonths(23);
-        }
+        $from = Carbon::create($year, $fm, 1);
+        $to = Carbon::create($year, $tm, 1);
         $months = [];
         for ($d = $from->copy(); $d->lte($to); $d->addMonth()) {
             $months[] = [$d->year, $d->month];
@@ -223,8 +223,8 @@ class OtController extends Controller
             ->get()->groupBy('employee_id');
 
         return view('ot.history', [
-            'months' => $months, 'entries' => $entries, 'from' => $from, 'to' => $to,
-            'employees' => Employee::orderBy('name')->get(['id', 'emp_code', 'name']),
+            'months' => $months, 'entries' => $entries, 'from' => $from, 'to' => $to, 'year' => $year,
+            'employees' => Employee::onRollsIn($year)->orderBy('name')->get(['id', 'emp_code', 'name']),
         ]);
     }
 }

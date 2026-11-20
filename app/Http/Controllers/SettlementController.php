@@ -21,12 +21,16 @@ class SettlementController extends Controller
 {
     public function index(Request $request)
     {
+        $year = (int) ($request->input('year') ?: active_year());
         $items = Settlement::with(['employee', 'creator'])
+            ->whereYear('settlement_date', $year)
             ->when($request->employee_id, fn ($q, $e) => $q->where('employee_id', $e))
             ->latest('settlement_date')->paginate(20)->withQueryString();
 
         return view('settlements.index', [
             'items' => $items,
+            'year' => $year,
+            'yearTotal' => Settlement::whereYear('settlement_date', $year)->sum('total_amount'),
             'employees' => Employee::orderBy('name')->get(['id', 'emp_code', 'name']),
         ]);
     }

@@ -5,7 +5,7 @@
     @foreach (['' => 'All', 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', 'cancelled' => 'Cancelled'] as $k => $label)
         <li class="nav-item">
             <a class="nav-link {{ request('status', '') === $k ? 'active' : '' }}" href="{{ route('leave-requests.index', array_merge(request()->except('status', 'page'), $k ? ['status' => $k] : [])) }}">
-                {{ $label }} @if($k && ($counts[$k] ?? 0))<span class="badge bg-light text-dark">{{ $counts[$k] }}</span>@endif
+                {{ $label }} @php($c = $k ? ($counts[$k] ?? 0) : $counts->sum())@if($c)<span class="badge bg-light text-dark">{{ $c }}</span>@endif
             </a>
         </li>
     @endforeach
@@ -22,7 +22,11 @@
                 <option value="">All types</option>
                 @foreach ($types as $t)<option value="{{ $t->id }}" @selected(request('leave_type_id') == $t->id)>{{ $t->code }} - {{ $t->name }}</option>@endforeach
             </select>
-            <input type="month" name="month" value="{{ request('month') }}" class="form-control form-control-sm" style="max-width:160px">
+            @include('partials.year-select', ['year' => $year])
+            <select name="month" class="form-select form-select-sm" style="max-width:150px">
+                <option value="">Whole year</option>
+                @foreach (range(1, 12) as $m)<option value="{{ $m }}" @selected($m == $month)>{{ month_name($m) }}</option>@endforeach
+            </select>
             <a href="{{ route('leave-requests.index') }}" class="btn btn-sm btn-link">Clear</a>
         </form>
         <a href="{{ route('leave-requests.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New leave</a>

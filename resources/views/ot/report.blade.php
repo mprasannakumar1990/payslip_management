@@ -6,7 +6,7 @@
 <div class="card mb-3 no-print">
     <div class="card-body d-flex flex-wrap gap-2 align-items-center py-2">
         <form class="d-flex gap-2 auto-filter" method="GET">
-            <input type="month" name="period" value="{{ $period }}" class="form-control form-control-sm">
+            @include('partials.period-select', ['p' => \Illuminate\Support\Carbon::create($year, $month, 1)])
             <select name="status" class="form-select form-select-sm" style="width:150px">
                 <option value="">All statuses</option>
                 @foreach (['approved', 'pending', 'rejected'] as $s)<option @selected(request('status') === $s)>{{ $s }}</option>@endforeach

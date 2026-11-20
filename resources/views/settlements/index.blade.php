@@ -3,10 +3,12 @@
 @section('content')
 <div class="card">
     <div class="card-header d-flex flex-wrap gap-2 align-items-center">
-        <form class="d-flex gap-2 flex-grow-1 auto-filter" method="GET">
+        <form class="d-flex gap-2 flex-grow-1 auto-filter align-items-center" method="GET">
+            @include('partials.year-select', ['year' => $year])
             <select name="employee_id" class="form-select form-select-sm select-search" style="min-width:240px"><option value="">All employees</option>@foreach ($employees as $e)<option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->emp_code }} - {{ $e->name }}</option>@endforeach</select>
             
         </form>
+        <span class="small text-muted">{{ $year }} total: <strong class="text-body">₹ {{ inr($yearTotal, 0) }}</strong></span>
         <a href="{{ route('settlements.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New settlement</a>
     </div>
     <div class="table-responsive">

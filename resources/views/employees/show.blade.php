@@ -109,7 +109,7 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <div class="card h-100">
-                    <div class="card-header">Recent leave requests</div>
+                    <div class="card-header">Leave requests — {{ $year }}</div>
                     <table class="table table-sm mb-0">
                         @forelse ($leaves as $l)
                             <tr><td>{{ $l->leaveType->code }}</td><td class="small">{{ $l->from_date->format('d M y') }}{{ $l->from_date->ne($l->to_date) ? ' – '.$l->to_date->format('d M y') : '' }}</td><td>{{ num_clean($l->days) }}</td><td><span class="badge bg-light text-dark">{{ $l->status }}</span></td></tr>
@@ -121,7 +121,7 @@
             </div>
             <div class="col-md-6">
                 <div class="card h-100">
-                    <div class="card-header">Recent OT</div>
+                    <div class="card-header">OT — {{ $year }}</div>
                     <table class="table table-sm mb-0">
                         <tr><th>Month</th><th class="num">2nd</th><th class="num">3rd</th><th class="num">OT</th><th></th></tr>
                         @forelse ($otEntries as $o)
@@ -134,7 +134,7 @@
             </div>
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Payslips</div>
+                    <div class="card-header">Payslips — {{ $year }}</div>
                     <table class="table table-sm mb-0">
                         <tr><th>Month</th><th class="num">Gross</th><th class="num">Net</th><th class="num">Total paid</th><th></th></tr>
                         @forelse ($payslips as $p)

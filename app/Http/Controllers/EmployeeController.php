@@ -24,18 +24,36 @@ class EmployeeController extends Controller
         return view('employees.index', [
             'employees' => $employees,
             'groups' => Setting::otGroups(),
+            'year' => $this->year($request),
+            'defaultStatus' => $this->defaultStatus($request),
         ]);
+    }
+
+    private function year(Request $request): int
+    {
+        return (int) ($request->input('year') ?: active_year());
+    }
+
+    /** Current year: active staff. Past years: everybody who was on the rolls that year (some have exited since). */
+    private function defaultStatus(Request $request): string
+    {
+        return $this->year($request) >= (int) now()->year ? 'active' : 'all';
     }
 
     private function filtered(Request $request)
     {
+        $year = $this->year($request);
+
         return Employee::query()
+            // only staff on the rolls during the selected year
+            ->where(fn ($w) => $w->whereNull('date_of_joining')->orWhereYear('date_of_joining', '<=', $year))
+            ->where(fn ($w) => $w->whereNull('date_of_exit')->orWhereYear('date_of_exit', '>=', $year))
             ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w->where('name', 'like', "%$s%")
                 ->orWhere('emp_code', 'like', "%$s%")->orWhere('designation', 'like', "%$s%")))
             ->when($request->group, fn ($q, $g) => $q->where('ot_group', $g))
             ->when($request->email === 'missing', fn ($q) => $q->where(fn ($w) => $w->whereNull('email')->orWhere('email', '')))
             ->when($request->email === 'has', fn ($q) => $q->whereNotNull('email')->where('email', '!=', ''))
-            ->when($request->input('status', 'active'), fn ($q, $s) => $s === 'all' ? $q : $q->where('status', $s))
+            ->when($request->input('status', $this->defaultStatus($request)), fn ($q, $s) => $s === 'all' ? $q : $q->where('status', $s))
             ->orderBy('emp_code');
     }
 
@@ -111,7 +129,7 @@ class EmployeeController extends Controller
 
     public function show(Request $request, Employee $employee, LeaveService $leave)
     {
-        $year = (int) $request->input('year', now()->year);
+        $year = (int) ($request->input('year') ?: active_year());
         $employee->load('allowances.type');
 
         return view('employees.show', [
@@ -120,9 +138,10 @@ class EmployeeController extends Controller
             'balances' => $leave->balances($employee, $year),
             'usage' => $leave->monthlyUsage($employee, $year),
             'elHistory' => $leave->elHistory($employee),
-            'leaves' => LeaveRequest::with('leaveType')->where('employee_id', $employee->id)->latest('from_date')->take(15)->get(),
-            'otEntries' => OtEntry::where('employee_id', $employee->id)->orderByDesc('year')->orderByDesc('month')->take(12)->get(),
-            'payslips' => $employee->payslips()->with('run')->latest('id')->take(12)->get(),
+            'leaves' => LeaveRequest::with('leaveType')->where('employee_id', $employee->id)
+                ->whereDate('from_date', '<=', "$year-12-31")->whereDate('to_date', '>=', "$year-01-01")->latest('from_date')->get(),
+            'otEntries' => OtEntry::where('employee_id', $employee->id)->where('year', $year)->orderByDesc('month')->get(),
+            'payslips' => $employee->payslips()->with('run')->whereHas('run', fn ($q) => $q->where('year', $year))->latest('id')->get(),
             'settlements' => $employee->settlements()->latest()->get(),
         ]);
     }

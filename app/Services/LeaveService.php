@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ElLedger;
 use App\Models\Employee;
 use App\Models\LeaveAdjustment;
+use App\Models\LeaveAllocation;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\Setting;
@@ -22,6 +23,9 @@ class LeaveService
 {
     /** @var array<string, Collection> */
     private array $typeCache = [];
+
+    /** @var array<string, array|null> */
+    private array $allocCache = [];
 
     public function types(): Collection
     {
@@ -149,9 +153,88 @@ class LeaveService
         return max(0, $end - $start + 1) / 12;
     }
 
+    /**
+     * Stored yearly allocation [type code => days] for paid leave types, or null when the year has not been generated
+     * for this employee (then the entitlement is computed from the leave-type quotas).
+     */
+    public function allocation(Employee $emp, int $year): ?array
+    {
+        $key = $emp->id.'-'.$year;
+        if (! array_key_exists($key, $this->allocCache)) {
+            $codes = $this->types()->where('is_paid', true)->pluck('code', 'id');
+            $rows = LeaveAllocation::where('employee_id', $emp->id)->where('year', $year)->get();
+            $this->allocCache[$key] = $rows->isEmpty() ? null : $rows->filter(fn ($a) => isset($codes[$a->leave_type_id]))
+                ->mapWithKeys(fn ($a) => [$codes[$a->leave_type_id] => (float) $a->days])->all();
+        }
+
+        return $this->allocCache[$key];
+    }
+
+    public function flushAllocations(): void
+    {
+        $this->allocCache = [];
+    }
+
+    /** Default entitlement for a type and year: yearly quota x the pro-rata factor for joiners / leavers. */
+    public function defaultQuota(Employee $emp, LeaveType $type, int $year): float
+    {
+        return round($type->yearly_quota * $this->entitlementFactor($emp, $year), 2);
+    }
+
     public function pool(Employee $emp, int $year): float
     {
+        $alloc = $this->allocation($emp, $year);
+        if ($alloc !== null) {
+            return round(array_sum($alloc), 2);
+        }
+
         return round(Setting::num('annual_leave_pool') * $this->entitlementFactor($emp, $year), 2);
+    }
+
+    /**
+     * Generate (or refresh) the yearly leave allocation for everyone on the rolls in $year.
+     * Existing rows edited by an admin are never touched; other rows are updated when the computed value changed
+     * (e.g. an exit date was entered). Returns ['created' => n, 'updated' => n, 'employees' => n].
+     */
+    public function generateYear(int $year, ?Employee $only = null): array
+    {
+        $types = $this->types()->where('is_paid', true);
+        $employees = $only ? collect([$only]) : Employee::onRollsIn($year)->get();
+        $stats = ['created' => 0, 'updated' => 0, 'employees' => 0];
+        foreach ($employees as $emp) {
+            if ($this->entitlementFactor($emp, $year) <= 0) {
+                if ($only) { // no longer on the rolls this year: drop rows that were generated automatically
+                    LeaveAllocation::where('employee_id', $emp->id)->where('year', $year)->where('is_manual', false)->delete();
+                }
+                continue;
+            }
+            $existing = LeaveAllocation::where('employee_id', $emp->id)->where('year', $year)->get()->keyBy('leave_type_id');
+            $touched = false;
+            foreach ($types as $t) {
+                $days = $this->defaultQuota($emp, $t, $year);
+                $row = $existing[$t->id] ?? null;
+                if (! $row) {
+                    LeaveAllocation::create(['employee_id' => $emp->id, 'leave_type_id' => $t->id, 'year' => $year, 'days' => $days,
+                        'created_by' => auth()->id()]);
+                    $stats['created']++;
+                    $touched = true;
+                } elseif (! $row->is_manual && abs($row->days - $days) > 0.001) {
+                    $row->update(['days' => $days]);
+                    $stats['updated']++;
+                    $touched = true;
+                }
+            }
+            $stats['employees'] += $touched ? 1 : 0;
+            unset($this->allocCache[$emp->id.'-'.$year]);
+        }
+
+        return $stats;
+    }
+
+    /** True once the year's allocation has been generated for at least one employee. */
+    public function isGenerated(int $year): bool
+    {
+        return LeaveAllocation::where('year', $year)->exists();
     }
 
     /**
@@ -176,11 +259,12 @@ class LeaveService
             }
         }
         $paidTypes = $this->types()->where('is_paid', true);
+        $alloc = $this->allocation($emp, $year);
         foreach ($paidTypes as $t) {
             $rows[$t->code] = [
                 'code' => $t->code,
                 'name' => $t->name,
-                'quota' => round($t->yearly_quota * $factor, 2),
+                'quota' => round($alloc !== null ? ($alloc[$t->code] ?? 0) : $t->yearly_quota * $factor, 2),
                 'used' => round($rows[$t->code]['used'] ?? 0, 2),
             ];
         }
@@ -245,7 +329,7 @@ class LeaveService
         }
         $usage = $this->monthlyUsage($emp, $year);
         $used = array_sum(array_column($usage, 'paid'));
-        $elCap = Setting::num('el_max_per_year') * $factor;
+        $elCap = $this->allocation($emp, $year)['EL'] ?? Setting::num('el_max_per_year') * $factor;
 
         return round(min($elCap, max(0, $this->pool($emp, $year) - $used)), 2);
     }

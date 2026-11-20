@@ -19,13 +19,16 @@ class PayrollController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $year = (int) ($request->input('year') ?: active_year());
         $runs = PayrollRun::with(['creator', 'finalizer'])->withCount('payslips')
             ->withSum('payslips', 'gross_salary')->withSum('payslips', 'net_salary')->withSum('payslips', 'total_amount')
-            ->orderByDesc('year')->orderByDesc('month')->paginate(24);
+            ->where('year', $year)->orderByDesc('month')->paginate(24)->withQueryString();
+        $totals = \App\Models\Payslip::whereHas('run', fn ($q) => $q->where('year', $year))
+            ->selectRaw('count(*) n, sum(gross_salary) gross, sum(net_salary) net, sum(total_amount) total')->first();
 
-        return view('payroll.index', ['runs' => $runs, 'workingDays' => Setting::num('working_days')]);
+        return view('payroll.index', ['runs' => $runs, 'year' => $year, 'totals' => $totals, 'workingDays' => Setting::num('working_days')]);
     }
 
     public function store(Request $request)

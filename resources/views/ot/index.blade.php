@@ -5,7 +5,7 @@
 <div class="card mb-3">
     <div class="card-body d-flex flex-wrap gap-2 align-items-center py-2">
         <form class="d-flex gap-2 auto-filter" method="GET">
-            <input type="month" name="period" value="{{ $period }}" class="form-control form-control-sm">
+            @include('partials.period-select', ['p' => \Illuminate\Support\Carbon::create($year, $month, 1)])
             
         </form>
         <span class="ms-auto small text-muted">2nd / 3rd shift = hours (₹{{ num_clean(setting('second_shift_rate')) }} / ₹{{ num_clean(setting('third_shift_rate')) }} per hour) · OT = hours paid at per-day ÷ {{ num_clean(setting('ot_hours_per_day')) }} × multiplier</span>

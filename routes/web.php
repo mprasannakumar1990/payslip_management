@@ -26,6 +26,7 @@ Route::middleware(['auth', 'role'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/workflow', [WorkflowController::class, 'index'])->name('workflow.index');
+    Route::post('/year', [\App\Http\Controllers\YearController::class, 'switch'])->name('year.switch');
 
     // ---- Excel / CSV imports ----
     Route::get('imports', [ImportController::class, 'index'])->name('imports.index');
@@ -58,6 +59,9 @@ Route::middleware(['auth', 'role'])->group(function () {
     Route::get('leave/register', [LeaveController::class, 'register'])->name('leave.register');
     Route::get('leave/el-summary', [LeaveController::class, 'elSummary'])->name('leave.el-summary');
     Route::post('leave/close-year', [LeaveController::class, 'closeYear'])->name('leave.close-year');
+    Route::get('leave/allocations', [LeaveController::class, 'allocations'])->name('leave.allocations');
+    Route::post('leave/allocations/generate', [LeaveController::class, 'generateAllocations'])->name('leave.allocations.generate');
+    Route::put('leave/allocations/{employee}', [LeaveController::class, 'updateAllocation'])->name('leave.allocations.update');
     Route::get('leave/adjustments', [LeaveController::class, 'adjustments'])->name('leave.adjustments');
     Route::post('leave/adjustments', [LeaveController::class, 'storeAdjustment'])->name('leave.adjustments.store');
     Route::delete('leave/adjustments/{adjustment}', [LeaveController::class, 'destroyAdjustment'])->name('leave.adjustments.destroy');

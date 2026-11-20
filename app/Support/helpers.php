@@ -106,8 +106,9 @@ if (! function_exists('year_options')) {
     /** Years for dropdowns: from the earliest joining year (or data year) up to next year — grows automatically. */
     function year_options(): array
     {
-        static $years;
-        if ($years === null) {
+        static $years, $for;
+        if ($years === null || $for !== (int) now()->year) {
+            $for = (int) now()->year;
             $first = \App\Models\Employee::withTrashed()->min('date_of_joining');
             $min = $first ? (int) substr((string) $first, 0, 4) : (int) now()->year;
             $min = min($min, (int) (\App\Models\LeaveAdjustment::min('year') ?: $min), (int) (\App\Models\PayrollRun::min('year') ?: $min));
@@ -129,6 +130,48 @@ if (! function_exists('working_period')) {
         $now = now();
 
         return ($now->day <= $deadline ? $now->copy()->subMonthNoOverflow() : $now->copy())->startOfMonth();
+    }
+}
+
+if (! function_exists('active_year')) {
+    /** The year selected in the top bar (defaults to the year of the month being worked on). */
+    function active_year(): int
+    {
+        $y = (int) session('active_year');
+
+        return $y >= 2000 && $y <= (int) now()->year + 1 ? $y : (int) working_period()->year;
+    }
+}
+
+if (! function_exists('year_period')) {
+    /**
+     * Default month for month-based pages inside the active year: the working month when it falls in that year,
+     * otherwise December for past years and January for future years.
+     */
+    function year_period(?int $year = null): \Illuminate\Support\Carbon
+    {
+        $year ??= active_year();
+        $wp = working_period();
+        if ($wp->year === $year) {
+            return $wp->copy();
+        }
+
+        return \Illuminate\Support\Carbon::create($year, $year < $wp->year ? 12 : 1, 1);
+    }
+}
+
+if (! function_exists('request_period')) {
+    /** Month chosen on a month-based page: ?period=YYYY-MM, or ?year=YYYY&month=M, else the default month of the active year. */
+    function request_period(?\Illuminate\Http\Request $request = null): \Illuminate\Support\Carbon
+    {
+        $request ??= request();
+        if (preg_match('/^(\d{4})-(\d{2})$/', (string) $request->input('period'), $m) && $m[2] >= 1 && $m[2] <= 12) {
+            return \Illuminate\Support\Carbon::create((int) $m[1], (int) $m[2], 1);
+        }
+        $year = preg_match('/^\d{4}$/', (string) $request->input('year')) ? (int) $request->input('year') : active_year();
+        $month = (int) $request->input('month');
+
+        return $month >= 1 && $month <= 12 ? \Illuminate\Support\Carbon::create($year, $month, 1) : year_period($year);
     }
 }
 

@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias(['role' => \App\Http\Middleware\EnsureRole::class]);
         $middleware->appendToGroup('web', \App\Http\Middleware\EnsureDailyBackup::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\ActiveYear::class);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('dashboard'));
     })

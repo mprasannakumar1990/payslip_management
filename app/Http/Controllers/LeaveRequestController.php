@@ -20,21 +20,26 @@ class LeaveRequestController extends Controller
 
     public function index(Request $request)
     {
+        $year = (int) ($request->input('year') ?: active_year());
+        $month = (int) $request->input('month'); // 1-12 within the selected year
+        $start = Carbon::create($year, $month ?: 1, 1);
+        $end = $month ? $start->copy()->endOfMonth() : Carbon::create($year, 12, 31);
+        $inPeriod = fn ($q) => $q->whereDate('from_date', '<=', $end)->whereDate('to_date', '>=', $start);
+
         $requests = LeaveRequest::with(['employee', 'leaveType', 'creator', 'actioner'])
+            ->where($inPeriod)
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->employee_id, fn ($q, $e) => $q->where('employee_id', $e))
             ->when($request->leave_type_id, fn ($q, $t) => $q->where('leave_type_id', $t))
-            ->when($request->month, function ($q, $m) {
-                $start = Carbon::parse($m.'-01');
-                $q->whereDate('from_date', '<=', $start->copy()->endOfMonth())->whereDate('to_date', '>=', $start);
-            })
             ->orderByRaw("status = 'pending' desc")->latest('from_date')->paginate(25)->withQueryString();
 
         return view('leave.requests.index', [
             'requests' => $requests,
-            'employees' => Employee::orderBy('name')->get(['id', 'emp_code', 'name']),
+            'year' => $year,
+            'month' => $month,
+            'employees' => Employee::onRollsIn($year)->orderBy('name')->get(['id', 'emp_code', 'name']),
             'types' => LeaveType::ordered()->get(),
-            'counts' => LeaveRequest::selectRaw('status, count(*) c')->groupBy('status')->pluck('c', 'status'),
+            'counts' => LeaveRequest::where($inPeriod)->selectRaw('status, count(*) c')->groupBy('status')->pluck('c', 'status'),
         ]);
     }
 

@@ -181,6 +181,58 @@
         background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(12px); pointer-events: none; transition: .25s; }
     #toTop.show { opacity: 1; transform: none; pointer-events: auto; }
 
+    /* ================= year switcher (top bar) ================= */
+    .year-switch { display: flex; align-items: center; gap: .4rem; padding: .3rem .35rem .3rem .7rem; border-radius: 12px; background: #eef2ff;
+        color: var(--indigo); font-weight: 600; font-size: .85rem; border: 1px solid #c7d2fe; }
+    .year-switch select { border: 0; background: #fff; border-radius: 8px; padding: .2rem 1.6rem .2rem .55rem; font-weight: 700; color: var(--ink);
+        appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234f46e5' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat; background-position: right .45rem center; background-size: 11px; cursor: pointer; }
+    .year-switch.is-past { background: #fff7ed; border-color: #fed7aa; color: var(--orange); }
+    .year-filter { font-weight: 600; }
+
+    /* ================= dashboard ================= */
+    .dash-hero { position: relative; overflow: hidden; border-radius: var(--radius); color: #fff; padding: 1.5rem 1.6rem;
+        background: radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 40%), linear-gradient(120deg, #312e81, #4f46e5 55%, #7c3aed); box-shadow: var(--shadow-lg); }
+    .dash-hero .hero-year { font-size: 3.2rem; font-weight: 800; line-height: 1; letter-spacing: -.03em; opacity: .95; }
+    .dash-hero .hero-sub { opacity: .8; }
+    .dash-hero .hero-chip { display: inline-flex; align-items: center; gap: .35rem; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+        border-radius: 999px; padding: .3rem .75rem; font-size: .82rem; color: #fff; text-decoration: none; }
+    .dash-hero .hero-chip:hover { background: rgba(255,255,255,.24); }
+    .hero-steps { display: flex; gap: 6px; }
+    .hero-steps span { flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,.22); }
+    .hero-steps span.done { background: #6ee7b7; } .hero-steps span.attention { background: #fcd34d; }
+
+    .kpi { border: 1px solid var(--line); transition: transform .18s, box-shadow .18s; }
+    a:hover > .kpi, .kpi.hoverable:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .kpi-icon { width: 46px; height: 46px; flex: 0 0 46px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-size: 1.25rem; box-shadow: 0 6px 14px rgba(16,24,40,.12); }
+    .kpi-value { font-size: 1.45rem; font-weight: 700; color: var(--ink); line-height: 1.15; }
+    .kpi-label { font-size: .8rem; color: var(--muted); }
+    .kpi-foot { font-size: .75rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: .5rem; margin-top: .75rem; }
+
+    .bars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; align-items: end; height: 190px; padding-top: 18px; }
+    .bars .bar { position: relative; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; text-decoration: none; }
+    .bars .bar i { display: block; border-radius: 8px 8px 3px 3px; min-height: 3px; background: linear-gradient(180deg, #a5b4fc, #4f46e5); transition: filter .15s; }
+    .bars .bar.draft i { background: linear-gradient(180deg, #fde68a, #f59e0b); }
+    .bars .bar.empty i { background: #e7ebf3; }
+    .bars .bar.current i { outline: 2px solid #4f46e5; outline-offset: 2px; }
+    .bars .bar:hover i { filter: brightness(1.08) saturate(1.15); }
+    .bars .bar b { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: .66rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+    .bars-x { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; text-align: center; font-size: .72rem; color: var(--muted); margin-top: 6px; }
+    .bars.sm { height: 120px; }
+    .bars.green .bar i { background: linear-gradient(180deg, #6ee7b7, #059669); }
+    .bars.orange .bar i { background: linear-gradient(180deg, #fdba74, #ea580c); }
+    .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+
+    .donut { --p1: 0; --p2: 0; width: 150px; height: 150px; border-radius: 50%; position: relative; flex: 0 0 150px;
+        background: conic-gradient(#db2777 0 calc(var(--p2) * 1%), #4f46e5 calc(var(--p2) * 1%) calc(var(--p1) * 1%), #e7ebf3 calc(var(--p1) * 1%) 100%); }
+    .donut::after { content: ''; position: absolute; inset: 20px; border-radius: 50%; background: #fff; }
+    .donut .donut-c { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; z-index: 1; line-height: 1.1; }
+    .rank-row { display: flex; align-items: center; gap: .6rem; padding: .45rem 0; border-bottom: 1px dashed var(--line); }
+    .rank-row:last-child { border-bottom: 0; }
+    .rank-n { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-size: .75rem; font-weight: 700; background: #fff7ed; color: var(--orange); }
+    .mini-progress { height: 6px; border-radius: 4px; background: #f1f5f9; overflow: hidden; }
+    .mini-progress > span { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #fdba74, #ea580c); }
+
     /* ================= mobile bottom navigation ================= */
     .mobile-nav { display: none; }
 
@@ -226,6 +278,11 @@
         .table-register thead th:first-child { background: #f4f6fb; }
     }
     @media (max-width: 575.98px) {
+        .bars .bar b { display: none; }
+        .bars { gap: 3px; height: 150px; } .bars-x { gap: 3px; font-size: .62rem; }
+        .dash-hero { padding: 1.1rem; } .dash-hero .hero-year { font-size: 2.4rem; }
+        .year-switch { padding: .25rem .3rem .25rem .5rem; }
+        .donut { width: 120px; height: 120px; flex-basis: 120px; } .donut::after { inset: 16px; }
         .page-title { font-size: .98rem; }
         .page-crumb { display: none; }
         .btn-back { padding: .4rem .6rem; }

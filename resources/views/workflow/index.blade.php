@@ -6,7 +6,7 @@
     <div class="card-body d-flex flex-wrap gap-3 align-items-center">
         <form method="GET" class="auto-filter d-flex gap-2 align-items-center">
             <span class="small">Month</span>
-            <input type="month" name="period" value="{{ $p->format('Y-m') }}" class="form-control form-control-sm" style="width:170px">
+            @include('partials.period-select', ['p' => $p])
         </form>
         <div>
             <div class="fw-semibold fs-5">{{ $p->format('F Y') }} payslips</div>

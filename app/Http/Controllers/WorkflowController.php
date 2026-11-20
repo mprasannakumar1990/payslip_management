@@ -10,7 +10,7 @@ class WorkflowController extends Controller
 {
     public function index(Request $request, WorkflowService $workflow)
     {
-        $p = $request->period ? Carbon::createFromFormat('Y-m-d', $request->period.'-01') : working_period();
+        $p = request_period($request);
 
         return view('workflow.index', [
             'w' => $workflow->status($p->year, $p->month),

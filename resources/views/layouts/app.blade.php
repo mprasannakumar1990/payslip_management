@@ -11,6 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     @include('layouts._theme')
+    @include('layouts._redesign')
+    @include('layouts._themes')
     @stack('styles')
 </head>
 <body>
@@ -26,6 +28,7 @@ $nav = [
         ['employees.index', 'Employee Registration', 'bi-people', 'c-blue', ['employees.*']],
     ]],
     ['Leave Management', [
+        ['leave.allocations', 'Yearly Leave Allocation', 'bi-calendar2-plus', 'c-green', ['leave.allocations']],
         ['leave-requests.index', 'Leave Requests', 'bi-calendar2-check', 'c-green', ['leave-requests.*']],
         ['leave.balances', 'Leave Balances', 'bi-pie-chart', 'c-green', ['leave.balances']],
         ['leave.register', 'Leave Register', 'bi-table', 'c-green', ['leave.register']],
@@ -112,6 +115,37 @@ foreach ($nav as [, $items]) {
             <h1 class="page-title text-truncate">@yield('title', 'Dashboard')</h1>
             <div class="page-crumb d-none d-md-block">{{ setting('company_name') }} · {{ now()->format('l, d M Y') }}</div>
         </div>
+        {{-- live digital clock, India Standard Time (synced to the server clock) --}}
+        <div class="live-clock" id="liveClock" data-server-ms="{{ now()->getTimestampMs() }}" title="India Standard Time (IST, UTC+05:30)">
+            <span class="lc-icon"><i class="bi bi-clock"></i></span>
+            <span class="lc-time"><span data-h>--</span><b>:</b><span data-m>--</span><b>:</b><span data-s>--</span><small data-ap></small></span>
+            <span class="lc-meta d-none d-xl-flex"><span data-d></span><span class="lc-tz">IST</span></span>
+        </div>
+        {{-- the year every page shows --}}
+        <form method="POST" action="{{ route('year.switch') }}" class="year-switch {{ active_year() != now()->year ? 'is-past' : '' }}" title="Year shown on every page">@csrf
+            <i class="bi bi-calendar3"></i>
+            <span class="d-none d-sm-inline">Year</span>
+            <select name="year" aria-label="Year shown on every page" onchange="this.form.submit()">
+                @foreach (year_options() as $y)<option value="{{ $y }}" @selected($y == active_year())>{{ $y }}</option>@endforeach
+            </select>
+        </form>
+        <div class="dropdown theme-pick">
+            <button type="button" class="btn-theme" data-bs-toggle="dropdown" aria-label="Colour theme" title="Colour theme"><i class="bi bi-palette2"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li class="px-3 pt-1 pb-2 small text-muted fw-semibold">Colour theme</li>
+                @foreach ([
+                    'purple-orange' => ['Purple & Orange', 'linear-gradient(135deg,#4c1d95 50%,#f97316 50%)'],
+                    'purple' => ['Royal Purple', 'linear-gradient(135deg,#3b0764,#a855f7)'],
+                    'orange' => ['Sunset Orange', 'linear-gradient(135deg,#c2410c,#f59e0b)'],
+                    'ocean' => ['Ocean Blue', 'linear-gradient(135deg,#0c4a6e,#06b6d4)'],
+                    'emerald' => ['Emerald Green', 'linear-gradient(135deg,#064e3b,#34d399)'],
+                ] as $key => [$name, $swatch])
+                    <li><button type="button" class="dropdown-item d-flex align-items-center gap-2" data-theme-set="{{ $key }}">
+                        <span class="swatch" style="background:{{ $swatch }}"></span><span class="flex-grow-1">{{ $name }}</span><i class="bi bi-check2"></i>
+                    </button></li>
+                @endforeach
+            </ul>
+        </div>
         @if ($u->isSuperAdmin())
             <button type="button" class="btn btn-success btn-sm d-flex align-items-center gap-1 px-2 px-md-3" data-backup-now title="Back up the database now (ZIP)">
                 <i class="bi bi-database-down fs-6"></i><span class="d-none d-md-inline">Backup</span>
@@ -180,6 +214,7 @@ foreach ($nav as [, $items]) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 @include('layouts._scripts')
+@include('layouts._toast')
 @if ($u->isSuperAdmin())
     @include('backups._reminder')
 @endif

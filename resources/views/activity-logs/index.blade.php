@@ -4,6 +4,11 @@
 <div class="card">
     <div class="card-header">
         <form class="d-flex flex-wrap gap-2 auto-filter" method="GET">
+            @include('partials.year-select', ['year' => $year])
+            <select name="month" class="form-select form-select-sm" style="max-width:140px">
+                <option value="">Whole year</option>
+                @foreach (range(1, 12) as $m)<option value="{{ $m }}" @selected(request('month') == $m)>{{ month_name($m) }}</option>@endforeach
+            </select>
             <select name="user_id" class="form-select form-select-sm" style="max-width:200px">
                 <option value="">All users</option>
                 @foreach ($users as $u)<option value="{{ $u->id }}" @selected(request('user_id') == $u->id)>{{ $u->name }}</option>@endforeach

@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\ElLedger;
 use App\Models\Employee;
 use App\Models\LeaveAdjustment;
+use App\Models\LeaveAllocation;
 use App\Models\LeaveType;
 use App\Models\PayrollRun;
 use App\Models\Setting;
@@ -22,17 +23,104 @@ class LeaveController extends Controller
 
     private function employeesFor(int $year)
     {
-        return Employee::query()
-            ->where(fn ($q) => $q->whereNull('date_of_joining')->orWhereYear('date_of_joining', '<=', $year))
-            ->where(fn ($q) => $q->whereNull('date_of_exit')->orWhereYear('date_of_exit', '>=', $year))
-            ->whereIn('status', ['active', 'exited'])
-            ->orderBy('emp_code')->get();
+        return Employee::onRollsIn($year)->orderBy('emp_code')->get();
+    }
+
+    /** Yearly leave allocation: CL / SL / EL granted to each employee for the year. */
+    public function allocations(Request $request)
+    {
+        $year = (int) ($request->input('year') ?: active_year());
+        $types = LeaveType::ordered()->where('is_paid', true)->get();
+        $allocs = LeaveAllocation::where('year', $year)->get()->groupBy('employee_id');
+        $rows = $this->employeesFor($year)
+            ->when($request->q, fn ($c, $s) => $c->filter(fn ($e) => stripos($e->name.' '.$e->emp_code, $s) !== false))
+            ->map(function ($e) use ($allocs, $types, $year) {
+                $mine = ($allocs[$e->id] ?? collect())->keyBy('leave_type_id');
+                $b = $this->leave->balances($e, $year);
+
+                return [
+                    'employee' => $e,
+                    'alloc' => $types->mapWithKeys(fn ($t) => [$t->id => $mine[$t->id] ?? null]),
+                    'default' => $types->mapWithKeys(fn ($t) => [$t->id => $this->leave->defaultQuota($e, $t, $year)]),
+                    'total' => $mine->sum('days'),
+                    'used' => $b['used'],
+                    'balance' => $b['balance'],
+                    'manual' => $mine->contains('is_manual', true),
+                    'generated' => $mine->isNotEmpty(),
+                ];
+            })->values();
+
+        if ($request->export) {
+            $header = array_merge(['Emp ID', 'Name', 'Date of Joining', 'Date of Exit'], $types->pluck('code')->all(), ['Total', 'Used', 'Balance', 'Edited']);
+            $data = $rows->map(fn ($r) => array_merge(
+                [$r['employee']->emp_code, $r['employee']->name, $r['employee']->date_of_joining?->format('d-m-Y'), $r['employee']->date_of_exit?->format('d-m-Y')],
+                $types->map(fn ($t) => $r['alloc'][$t->id]?->days ?? '')->all(),
+                [$r['total'], $r['used'], $r['balance'], $r['manual'] ? 'Yes' : '']
+            ));
+
+            return xlsx_download("leave-allocation-$year.xlsx", $header, $data, ['title' => "Allocation $year"]);
+        }
+
+        return view('leave.allocations', [
+            'rows' => $rows, 'types' => $types, 'year' => $year,
+            'missing' => $rows->where('generated', false)->count(),
+        ]);
+    }
+
+    public function generateAllocations(Request $request)
+    {
+        $data = $request->validate(['year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)]]);
+        $year = (int) $data['year'];
+        $s = $this->leave->generateYear($year);
+        ActivityLog::record('leave', "Generated yearly leave for $year: {$s['created']} new, {$s['updated']} updated ({$s['employees']} employees)");
+        $msg = $s['created'] + $s['updated'] === 0
+            ? "Leave for $year is already up to date for every employee."
+            : "Leave for $year generated: {$s['employees']} employee(s), {$s['created']} new and {$s['updated']} updated entries.";
+
+        return redirect()->route('leave.allocations', ['year' => $year])->with('success', $msg);
+    }
+
+    public function updateAllocation(Request $request, Employee $employee)
+    {
+        $types = LeaveType::where('is_paid', true)->get();
+        $data = $request->validate([
+            'year' => ['required', 'integer', 'min:2000', 'max:'.(now()->year + 1)],
+            'days' => ['array'],
+            'days.*' => ['nullable', 'numeric', 'min:0', 'max:366'],
+            'reset' => ['nullable', 'boolean'],
+        ]);
+        $year = (int) $data['year'];
+        if ($request->boolean('reset')) {
+            LeaveAllocation::where('employee_id', $employee->id)->where('year', $year)->delete();
+            $this->leave->generateYear($year, $employee);
+            ActivityLog::record('leave', "Reset yearly leave $year for {$employee->label()} to the standard entitlement");
+
+            return back()->with('success', "Leave for {$employee->name} ($year) reset to the standard entitlement.");
+        }
+        $changes = [];
+        foreach ($types as $t) {
+            $v = $data['days'][$t->id] ?? null;
+            if ($v === null || $v === '') {
+                continue;
+            }
+            $row = LeaveAllocation::firstOrNew(['employee_id' => $employee->id, 'year' => $year, 'leave_type_id' => $t->id]);
+            if ($row->exists && abs($row->days - (float) $v) < 0.001) {
+                continue;
+            }
+            $changes[] = "$t->code ".num_clean($row->days ?? 0).' → '.num_clean($v);
+            $row->fill(['days' => (float) $v, 'is_manual' => true, 'created_by' => $row->created_by ?? auth()->id()])->save();
+        }
+        if ($changes) {
+            ActivityLog::record('leave', "Edited yearly leave $year for {$employee->label()}: ".implode(', ', $changes));
+        }
+
+        return back()->with('success', $changes ? "Leave for {$employee->name} ($year) updated." : 'No changes.');
     }
 
     public function balances(Request $request)
     {
         $wp = working_period();
-        $year = (int) ($request->input('year') ?: $wp->year);
+        $year = (int) ($request->input('year') ?: active_year());
         $month = (int) ($request->input('month') ?: ($year == $wp->year ? $wp->month : 12));
         $rows = $this->employeesFor($year)->map(fn ($e) => ['employee' => $e, 'b' => $this->leave->balances($e, $year, $month)]);
         $types = LeaveType::ordered()->where('is_paid', true)->get();
@@ -63,7 +151,7 @@ class LeaveController extends Controller
     /** Yearly register in the same shape as the "Staff's Earn Leave Balance" sheet. */
     public function register(Request $request)
     {
-        $year = (int) ($request->input('year') ?: working_period()->year);
+        $year = (int) ($request->input('year') ?: active_year());
         $pool = Setting::num('annual_leave_pool');
         $rows = $this->employeesFor($year)->map(function ($e) use ($year) {
             $usage = $this->leave->monthlyUsage($e, $year);
@@ -98,7 +186,7 @@ class LeaveController extends Controller
     /** Year-wise EL credited and encashment value, like the "2009 to 2020" sheet. */
     public function elSummary(Request $request)
     {
-        $toYear = (int) $request->input('to', now()->year);
+        $toYear = (int) $request->input('to', active_year());
         $fromYear = (int) $request->input('from', max(2009, $toYear - 9));
         $krw = Setting::num('krw_rate');
         $rows = Employee::whereIn('status', ['active', 'exited'])->orderBy('emp_code')->get()->map(function ($e) use ($fromYear, $toYear) {
@@ -170,7 +258,7 @@ class LeaveController extends Controller
 
     public function adjustments(Request $request)
     {
-        $year = (int) $request->input('year', now()->year);
+        $year = (int) ($request->input('year') ?: active_year());
         $items = LeaveAdjustment::with(['employee', 'leaveType'])->where('year', $year)
             ->when($request->employee_id, fn ($q, $e) => $q->where('employee_id', $e))
             ->when($request->month, fn ($q, $m) => $q->where('month', $m))

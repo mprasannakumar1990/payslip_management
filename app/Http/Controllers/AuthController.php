@@ -28,7 +28,7 @@ class AuthController extends Controller
         $request->user()->forceFill(['last_login_at' => now()])->save();
         ActivityLog::record('login', 'Logged in');
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('dashboard'))->with('success', 'Welcome back, '.$request->user()->name.'!');
     }
 
     public function logout(Request $request)

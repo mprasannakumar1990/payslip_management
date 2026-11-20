@@ -4,6 +4,7 @@
 <div class="card">
     <div class="card-header d-flex flex-wrap gap-2 align-items-center">
         <form class="d-flex flex-wrap gap-2 flex-grow-1 auto-filter" method="GET">
+            @include('partials.year-select', ['year' => $year])
             <input name="q" value="{{ request('q') }}" class="form-control form-control-sm" style="max-width:240px" placeholder="Search ID / name / designation">
             <select name="group" class="form-select form-select-sm" style="max-width:170px">
                 <option value="">All plants</option>
@@ -11,7 +12,7 @@
             </select>
             <select name="status" class="form-select form-select-sm" style="max-width:140px">
                 @foreach (['active' => 'Active', 'inactive' => 'Inactive', 'exited' => 'Exited', 'all' => 'All'] as $k => $v)
-                    <option value="{{ $k }}" @selected(request('status', 'active') === $k)>{{ $v }}</option>
+                    <option value="{{ $k }}" @selected(request('status', $defaultStatus) === $k)>{{ $v }}</option>
                 @endforeach
             </select>
             <select name="email" class="form-select form-select-sm" style="max-width:160px">

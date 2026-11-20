@@ -7,7 +7,7 @@
             <div class="card-header">Run payroll for a month</div>
             <div class="card-body">
                 <form method="POST" action="{{ route('payroll.store') }}" data-confirm="Generate payslips for every employee for the selected month from the latest employee, leave and approved OT data?" data-confirm-title="Generate payslips" data-confirm-level="double" data-busy="Generating payslips…">@csrf
-                    <div class="mb-3"><label class="form-label">Month *</label><input type="month" name="period" class="form-control" value="{{ old('period', working_period()->format('Y-m')) }}" required></div>
+                    <div class="mb-3"><label class="form-label">Month *</label><input type="month" name="period" class="form-control" value="{{ old('period', year_period($year)->format('Y-m')) }}" required></div>
                     <div class="mb-3"><label class="form-label">Working days *</label><input type="number" step="0.5" name="working_days" class="form-control" value="{{ old('working_days', $workingDays) }}" required></div>
                     <button class="btn btn-primary w-100"><i class="bi bi-gear-wide-connected"></i> Generate payslips</button>
                 </form>
@@ -26,6 +26,17 @@
     </div>
     <div class="col-lg-8">
         <div class="card">
+            <div class="card-header d-flex flex-wrap gap-2 align-items-center">
+                <form class="auto-filter d-flex gap-2 align-items-center" method="GET">
+                    @include('partials.year-select', ['year' => $year])
+                </form>
+                <div class="ms-auto d-flex flex-wrap gap-3 small text-muted">
+                    <span>Months run: <strong class="text-body">{{ $runs->total() }}</strong></span>
+                    <span>Gross: <strong class="text-body">₹ {{ inr($totals->gross ?? 0, 0) }}</strong></span>
+                    <span>Net: <strong class="text-body">₹ {{ inr($totals->net ?? 0, 0) }}</strong></span>
+                    <span>Total payable: <strong class="text-body">₹ {{ inr($totals->total ?? 0, 0) }}</strong></span>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0 table-stack">
                     <thead><tr><th>Month</th><th class="num">Payslips</th><th class="num">Gross</th><th class="num">Net</th><th class="num">Total payable</th><th>Status</th><th></th></tr></thead>

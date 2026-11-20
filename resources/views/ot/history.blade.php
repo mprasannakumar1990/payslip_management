@@ -4,13 +4,14 @@
 <div class="card">
     <div class="card-header">
         <form class="d-flex flex-wrap gap-2 align-items-center auto-filter" method="GET">
-            <span class="small">From</span><input type="month" name="from" value="{{ $from->format('Y-m') }}" class="form-control form-control-sm" style="width:160px">
-            <span class="small">to</span><input type="month" name="to" value="{{ $to->format('Y-m') }}" class="form-control form-control-sm" style="width:160px">
+            @include('partials.year-select', ['year' => $year])
+            <span class="small">From</span><select name="from_month" class="form-select form-select-sm" style="width:130px">@foreach (range(1, 12) as $m)<option value="{{ $m }}" @selected($m == $from->month)>{{ month_name($m) }}</option>@endforeach</select>
+            <span class="small">to</span><select name="to_month" class="form-select form-select-sm" style="width:130px">@foreach (range(1, 12) as $m)<option value="{{ $m }}" @selected($m == $to->month)>{{ month_name($m) }}</option>@endforeach</select>
             <select name="employee_id" class="form-select form-select-sm select-search" style="min-width:220px"><option value="">All employees</option>@foreach ($employees as $e)<option value="{{ $e->id }}" @selected(request('employee_id') == $e->id)>{{ $e->emp_code }} - {{ $e->name }}</option>@endforeach</select>
             
         </form>
     </div>
-    <div class="card-body py-2 small text-muted">Approved OT hours (normal + special) per month. Max 24 months.</div>
+    <div class="card-body py-2 small text-muted">Approved OT hours (normal + special) per month for {{ $year }}.</div>
     <div class="table-responsive">
         <table class="table table-sm table-bordered table-register mb-0">
             <thead><tr><th>Emp ID</th><th>Name</th>@foreach ($months as [$y, $m])<th class="num">{{ month_name($m, true) }} {{ substr($y, 2) }}</th>@endforeach<th class="num">Total</th></tr></thead>

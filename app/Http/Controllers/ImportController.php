@@ -41,7 +41,7 @@ class ImportController extends Controller
 
     public function index()
     {
-        return view('imports.index', ['period' => working_period()]);
+        return view('imports.index', ['period' => year_period()]);
     }
 
     // ---------------------------------------------------------------- uploads kept briefly for sheet switching
