@@ -23,6 +23,7 @@ $nav = [
         ['dashboard', 'Dashboard', 'bi-speedometer2', 'c-indigo', ['dashboard']],
         ['workflow.index', 'Monthly Workflow', 'bi-list-check', 'c-violet', ['workflow.*']],
         ['imports.index', 'Import Data (Excel)', 'bi-cloud-arrow-up', 'c-cyan', ['imports.*']],
+        ['help.index', 'Help & Guide', 'bi-question-circle', 'c-indigo', ['help.*']],
     ]],
     ['Users', [
         ['employees.index', 'Employee Registration', 'bi-people', 'c-blue', ['employees.*']],
@@ -129,6 +130,7 @@ foreach ($nav as [, $items]) {
                 @foreach (year_options() as $y)<option value="{{ $y }}" @selected($y == active_year())>{{ $y }}</option>@endforeach
             </select>
         </form>
+        <a href="{{ route('help.index') }}" class="btn-theme d-none d-sm-grid" title="Help & Guide" aria-label="Help & Guide"><i class="bi bi-question-lg"></i></a>
         <div class="dropdown theme-pick">
             <button type="button" class="btn-theme" data-bs-toggle="dropdown" aria-label="Colour theme" title="Colour theme"><i class="bi bi-palette2"></i></button>
             <ul class="dropdown-menu dropdown-menu-end shadow">

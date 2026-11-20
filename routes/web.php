@@ -26,7 +26,8 @@ Route::middleware(['auth', 'role'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/workflow', [WorkflowController::class, 'index'])->name('workflow.index');
-    Route::post('/year', [\App\Http\Controllers\YearController::class, 'switch'])->name('year.switch');
+    Route::view('/help', 'help.index')->name('help.index');
+    Route::post('/year',[\App\Http\Controllers\YearController::class, 'switch'])->name('year.switch');
 
     // ---- Excel / CSV imports ----
     Route::get('imports', [ImportController::class, 'index'])->name('imports.index');

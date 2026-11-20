@@ -129,7 +129,7 @@ class YearlyLeaveAndYearFilterTest extends TestCase
             $this->actingAs($this->admin)->post(route('year.switch'), ['year' => $year]);
             foreach (['dashboard', 'workflow.index', 'imports.index', 'employees.index', 'leave.allocations', 'leave-requests.index',
                 'leave.balances', 'leave.register', 'leave.el-summary', 'leave.adjustments', 'ot.index', 'ot.report', 'ot.history',
-                'payroll.index', 'settlements.index', 'activity-logs.index'] as $route) {
+                'payroll.index', 'settlements.index', 'activity-logs.index', 'help.index'] as $route) {
                 $this->actingAs($this->admin)->get(route($route))->assertOk();
             }
             $this->actingAs($this->admin)->get(route('employees.show', $emp))->assertOk()->assertSee("Payslips — $year");
