@@ -1,0 +1,11 @@
+# Send visitors to /public (the only web-facing folder) and keep project files (.env, vendor, storage...) private.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # work out this folder's URL base so the folder can be renamed freely
+    RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+    RewriteRule ^(.*)$ - [E=BASE:%1]
+    RewriteRule ^(.*)$ %{ENV:BASE}public/$1 [R=302,L]
+</IfModule>
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

@@ -1,0 +1,250 @@
+[
+ {
+  "code": "TSA007",
+  "second": 90.0,
+  "third": 72.0,
+  "normal": 36.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA011",
+  "second": 120.0,
+  "third": 0.0,
+  "normal": 20.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA028",
+  "second": 81.0,
+  "third": 108.0,
+  "normal": 27.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA030",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 0.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA055",
+  "second": 8.0,
+  "third": 154.0,
+  "normal": 108.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA061",
+  "second": 56.0,
+  "third": 0.0,
+  "normal": 56.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA065",
+  "second": 0.0,
+  "third": 72.0,
+  "normal": 42.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA068",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 95.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA070",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 98.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA077",
+  "second": 34.0,
+  "third": 120.0,
+  "normal": 126.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA084",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 134.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA085",
+  "second": 99.0,
+  "third": 72.0,
+  "normal": 19.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA091",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 24.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA094",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 56.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA097",
+  "second": 144.0,
+  "third": 64.0,
+  "normal": 44.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA099",
+  "second": 16.0,
+  "third": 0.0,
+  "normal": 28.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA100",
+  "second": 50.0,
+  "third": 121.0,
+  "normal": 107.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA102",
+  "second": 63.0,
+  "third": 90.0,
+  "normal": 45.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA103",
+  "second": 16.0,
+  "third": 0.0,
+  "normal": 61.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA105",
+  "second": 54.0,
+  "third": 160.0,
+  "normal": 119.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA104",
+  "second": 0.0,
+  "third": 20.0,
+  "normal": 128.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA110",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 0.0,
+  "spl": 0.0,
+  "remarks": "only 2 days work"
+ },
+ {
+  "code": "TSA115",
+  "second": 252.0,
+  "third": 41.0,
+  "normal": 152.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA117",
+  "second": 17.0,
+  "third": 0.0,
+  "normal": 34.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA119",
+  "second": 54.0,
+  "third": 108.0,
+  "normal": 9.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA120",
+  "second": 56.0,
+  "third": 144.0,
+  "normal": 0.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA123",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 22.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA124",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 63.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA125",
+  "second": 48.0,
+  "third": 15.0,
+  "normal": 135.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA126",
+  "second": 108.0,
+  "third": 63.0,
+  "normal": 36.0,
+  "spl": 0.0,
+  "remarks": ""
+ },
+ {
+  "code": "TSA127",
+  "second": 0.0,
+  "third": 0.0,
+  "normal": 30.0,
+  "spl": 0.0,
+  "remarks": ""
+ }
+]

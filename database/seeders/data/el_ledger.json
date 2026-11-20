@@ -1,0 +1,1622 @@
+[
+ {
+  "code": "TSA006",
+  "year": 2009,
+  "days": 9.1
+ },
+ {
+  "code": "TSA006",
+  "year": 2010,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2011,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2012,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2013,
+  "days": 10.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2014,
+  "days": 6.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA006",
+  "year": 2020,
+  "days": 16.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2009,
+  "days": 7.8
+ },
+ {
+  "code": "TSA007",
+  "year": 2010,
+  "days": 8.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2011,
+  "days": 13.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2012,
+  "days": 16.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2013,
+  "days": 16.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2014,
+  "days": 13.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2017,
+  "days": 8.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2018,
+  "days": 0.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2019,
+  "days": 0.0
+ },
+ {
+  "code": "TSA007",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA008",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2013,
+  "days": 9.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2015,
+  "days": 5.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2017,
+  "days": 10.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2018,
+  "days": 10.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA008",
+  "year": 2020,
+  "days": 16.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2009,
+  "days": 5.2
+ },
+ {
+  "code": "TSA011",
+  "year": 2010,
+  "days": 6.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2011,
+  "days": 8.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2012,
+  "days": 6.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2013,
+  "days": 3.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2014,
+  "days": 11.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2015,
+  "days": 7.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2017,
+  "days": 10.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2018,
+  "days": 11.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2019,
+  "days": 11.0
+ },
+ {
+  "code": "TSA011",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA013",
+  "year": 2009,
+  "days": 5.2
+ },
+ {
+  "code": "TSA013",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2011,
+  "days": 13.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2012,
+  "days": 13.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2013,
+  "days": 8.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2014,
+  "days": 3.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2016,
+  "days": 14.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2017,
+  "days": 15.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2018,
+  "days": 7.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2019,
+  "days": 12.0
+ },
+ {
+  "code": "TSA013",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA028",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2011,
+  "days": 9.1
+ },
+ {
+  "code": "TSA028",
+  "year": 2012,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2013,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2016,
+  "days": 15.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA028",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA030",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2011,
+  "days": 13.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2012,
+  "days": 16.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2013,
+  "days": 6.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2014,
+  "days": 14.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2016,
+  "days": 6.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2017,
+  "days": 10.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2019,
+  "days": 14.0
+ },
+ {
+  "code": "TSA030",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA054",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2012,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2013,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA054",
+  "year": 2020,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2012,
+  "days": 5.2
+ },
+ {
+  "code": "TSA055",
+  "year": 2013,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA055",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA061",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2013,
+  "days": 13.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2017,
+  "days": 4.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA061",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA065",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2013,
+  "days": 7.8
+ },
+ {
+  "code": "TSA065",
+  "year": 2014,
+  "days": 7.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2015,
+  "days": 15.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2016,
+  "days": 12.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2017,
+  "days": 0.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA065",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA068",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2013,
+  "days": 6.5
+ },
+ {
+  "code": "TSA068",
+  "year": 2014,
+  "days": 12.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2017,
+  "days": 11.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2018,
+  "days": 14.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2019,
+  "days": 6.0
+ },
+ {
+  "code": "TSA068",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA070",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2013,
+  "days": 6.5
+ },
+ {
+  "code": "TSA070",
+  "year": 2014,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA070",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA077",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2014,
+  "days": 13.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2016,
+  "days": 14.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2018,
+  "days": 15.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2019,
+  "days": 11.0
+ },
+ {
+  "code": "TSA077",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA084",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2014,
+  "days": 6.5
+ },
+ {
+  "code": "TSA084",
+  "year": 2015,
+  "days": 16.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA084",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA085",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2014,
+  "days": 3.9
+ },
+ {
+  "code": "TSA085",
+  "year": 2015,
+  "days": 7.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2016,
+  "days": 1.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2017,
+  "days": 9.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2018,
+  "days": 7.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2019,
+  "days": 4.0
+ },
+ {
+  "code": "TSA085",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA091",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2015,
+  "days": 9.1
+ },
+ {
+  "code": "TSA091",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA091",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA094",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2015,
+  "days": 7.8
+ },
+ {
+  "code": "TSA094",
+  "year": 2016,
+  "days": 16.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2017,
+  "days": 13.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2018,
+  "days": 7.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA094",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA097",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2016,
+  "days": 13.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2017,
+  "days": 16.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2019,
+  "days": 0.0
+ },
+ {
+  "code": "TSA097",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA099",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2017,
+  "days": 11.7
+ },
+ {
+  "code": "TSA099",
+  "year": 2018,
+  "days": 12.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA099",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA100",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2017,
+  "days": 11.7
+ },
+ {
+  "code": "TSA100",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA100",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA102",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2017,
+  "days": 3.9
+ },
+ {
+  "code": "TSA102",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2019,
+  "days": 12.0
+ },
+ {
+  "code": "TSA102",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA103",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2017,
+  "days": 1.3
+ },
+ {
+  "code": "TSA103",
+  "year": 2018,
+  "days": 16.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA103",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA105",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2017,
+  "days": 0.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2018,
+  "days": 10.4
+ },
+ {
+  "code": "TSA105",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA105",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA104",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2017,
+  "days": 0.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2018,
+  "days": 10.4
+ },
+ {
+  "code": "TSA104",
+  "year": 2019,
+  "days": 16.0
+ },
+ {
+  "code": "TSA104",
+  "year": 2020,
+  "days": 7.8
+ },
+ {
+  "code": "TSA115",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2017,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2018,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2019,
+  "days": 0.0
+ },
+ {
+  "code": "TSA115",
+  "year": 2020,
+  "days": 6.5
+ },
+ {
+  "code": "TSA117",
+  "year": 2009,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2010,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2011,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2012,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2013,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2014,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2015,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2016,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2017,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2018,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2019,
+  "days": 0.0
+ },
+ {
+  "code": "TSA117",
+  "year": 2020,
+  "days": 3.9
+ }
+]
