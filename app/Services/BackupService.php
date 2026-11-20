@@ -69,6 +69,8 @@ class BackupService
                 '--host='.$db['host'], '--port='.$db['port'], '--user='.$db['username'],
                 '--single-transaction', '--quick', '--routines', '--triggers', '--events',
                 '--default-character-set=utf8mb4', '--add-drop-table', '--hex-blob',
+                // full structure + all data; one INSERT per row with column names so the data is readable
+                '--skip-extended-insert', '--complete-insert',
                 $db['database'],
             ], null, $this->processEnv((string) $db['password']), null, 600);
 
@@ -174,7 +176,7 @@ class BackupService
             'Database : '.$database,
             'Created  : '.now()->format('d M Y h:i:s A'),
             'Type     : '.$trigger,
-            'File     : '.$sqlName.' (full MySQL dump: tables + data)',
+            'File     : '.$sqlName.' (full MySQL dump: all table structures + all data, one row per INSERT)',
             '',
             'HOW TO RESTORE (this replaces ALL current data):',
             '1. In the app, take a fresh backup first (Database Backups -> Back up now).',
