@@ -19,7 +19,7 @@ class ActiveYear
 {
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user() && $request->isMethod('GET')) {
+        if ($request->user() && $request->isMethod('GET') && ! $request->prefetch()) {
             $year = null;
             if (preg_match('/^\d{4}$/', (string) $request->query('year'))) {
                 $year = (int) $request->query('year');

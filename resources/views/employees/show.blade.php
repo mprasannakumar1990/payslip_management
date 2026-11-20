@@ -11,12 +11,25 @@
 
 <div class="row g-3">
     <div class="col-lg-4">
-        <div class="card mb-3">
-            <div class="card-header">Profile</div>
+        <div class="card mb-3 overflow-hidden">
+            <div class="profile-cover">
+                @include('partials.avatar', ['e' => $employee, 'size' => 88, 'ring' => 'ring'])
+                <div class="min-w-0">
+                    <div class="fs-5 fw-bold text-truncate">{{ $employee->name }}</div>
+                    <div class="small opacity-75">{{ $employee->emp_code }} · {{ $employee->designation }}</div>
+                    @php($nb = $employee->nextBirthday())
+                    @if ($nb?->isToday())
+                        <span class="badge bg-warning mt-1">🎂 Happy birthday today!</span>
+                    @elseif ($nb && $nb->diffInDays(now()->startOfDay(), true) <= 30)
+                        <span class="badge bg-light mt-1">🎂 Birthday {{ $nb->format('d M') }}</span>
+                    @endif
+                </div>
+            </div>
             <div class="card-body small">
                 <dl class="row mb-0">
                     @foreach ([
                         'Designation' => $employee->designation, 'Grade' => $employee->grade, 'Plant / group' => $employee->ot_group,
+                        'Date of birth' => $employee->date_of_birth?->format('d M Y'),
                         'Joined' => $employee->date_of_joining?->format('d M Y'), 'Service' => $employee->serviceYears().' yrs',
                         'Exit date' => $employee->date_of_exit?->format('d M Y'), 'Status' => ucfirst($employee->status),
                         'EPF / UAN' => $employee->uan_no, 'ESIC' => $employee->esic_no, 'PAN' => $employee->pan_no,

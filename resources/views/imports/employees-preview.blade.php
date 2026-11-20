@@ -60,3 +60,6 @@
     </div>
 </form>
 @endsection
+@push('scripts')
+    @include('imports._colorize')
+@endpush

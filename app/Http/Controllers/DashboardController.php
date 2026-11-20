@@ -73,6 +73,25 @@ class DashboardController extends Controller
             $alloc['lop'] += $b['excess'] + $b['lop'];
         }
 
+        // ---- celebrations (always "today", whatever year is selected)
+        $today = now()->startOfDay();
+        $staff = Employee::active()->get();
+        $birthdays = $staff->filter(fn ($e) => $e->nextBirthday() && $e->nextBirthday()->diffInDays($today, true) <= 30)
+            ->sortBy(fn ($e) => $e->nextBirthday()->timestamp)->values();
+        $anniversaries = $staff->filter(function ($e) use ($today) {
+            if (! $e->date_of_joining || $e->date_of_joining->year >= $today->year) {
+                return false;
+            }
+            $next = $e->date_of_joining->copy()->year($today->year);
+            if ($next->lt($today)) {
+                $next->addYear();
+            }
+            $e->setAttribute('anniv_date', $next);
+            $e->setAttribute('anniv_years', $next->year - $e->date_of_joining->year);
+
+            return $next->diffInDays($today, true) <= 30;
+        })->sortBy(fn ($e) => $e->anniv_date->timestamp)->values();
+
         $leaveInYear = fn ($q) => $q->whereDate('from_date', '<=', $end)->whereDate('to_date', '>=', $start);
         $isWorkingYear = $year === (int) working_period()->year;
 
@@ -103,6 +122,9 @@ class DashboardController extends Controller
             'leaveByMonth' => $leaveByMonth,
             'alloc' => $alloc,
             'topOt' => $topOt,
+            'birthdays' => $birthdays,
+            'birthdaysToday' => $birthdays->filter(fn ($e) => $e->nextBirthday()->isToday())->values(),
+            'anniversaries' => $anniversaries,
             'joiners' => $joiners,
             'leavers' => $leavers,
             'pendingLeaves' => LeaveRequest::with(['employee', 'leaveType'])->where($leaveInYear)->where('status', 'pending')->latest()->take(6)->get(),

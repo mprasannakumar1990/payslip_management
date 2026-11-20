@@ -47,6 +47,7 @@ Route::middleware(['auth', 'role'])->group(function () {
 
     // ---- Employee registration ----
     Route::get('employees/export', [EmployeeController::class, 'export'])->name('employees.export');
+    Route::get('employees/{employee}/photo', [EmployeeController::class, 'photo'])->name('employees.photo');
     Route::resource('employees', EmployeeController::class);
     Route::post('employees/{employee}/el-ledger', [LeaveController::class, 'saveElLedger'])->name('employees.el-ledger');
 

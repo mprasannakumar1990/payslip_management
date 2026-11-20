@@ -3,7 +3,7 @@
 @section('back', $employee->exists ? route('employees.show', $employee) : route('employees.index'))
 @section('content')
 @php($v = fn ($f, $d = null) => old($f, $employee->$f ?? $d))
-<form method="POST" action="{{ $employee->exists ? route('employees.update', $employee) : route('employees.store') }}">
+<form method="POST" action="{{ $employee->exists ? route('employees.update', $employee) : route('employees.store') }}" enctype="multipart/form-data">
     @csrf @if($employee->exists) @method('PUT') @endif
     <div class="row g-3">
         <div class="col-xl-8">
@@ -58,6 +58,27 @@
         </div>
         <div class="col-xl-4">
             <div class="card mb-3">
+                <div class="card-header">Photo</div>
+                <div class="card-body d-flex align-items-center gap-3">
+                    <label for="photoInput" class="photo-drop" id="photoDrop" title="Click or drop a photo">
+                        @if ($employee->photo_path)
+                            <img src="{{ $employee->photoUrl() }}" alt="" id="photoPreview">
+                        @else
+                            <img src="" alt="" id="photoPreview" class="d-none">
+                            <span class="ph-empty" id="photoEmpty"><i class="bi bi-camera"></i><small>Add photo</small></span>
+                        @endif
+                    </label>
+                    <div class="small">
+                        <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png,image/webp" class="d-none">
+                        <button type="button" class="btn btn-sm btn-outline-primary mb-1" onclick="document.getElementById('photoInput').click()"><i class="bi bi-upload"></i> Choose photo</button>
+                        <div class="text-muted">JPG, PNG or WebP, up to 3 MB. Shown on the employee list, dashboard and birthday wishes.</div>
+                        @if ($employee->photo_path)
+                            <div class="form-check mt-1"><input class="form-check-input" type="checkbox" name="remove_photo" value="1" id="removePhoto"><label class="form-check-label" for="removePhoto">Remove photo</label></div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
                 <div class="card-header">Salary structure (monthly)</div>
                 <div class="card-body row g-3">
                     <div class="col-12"><label class="form-label">Basic salary *</label><input type="number" step="0.01" name="basic_salary" class="form-control" value="{{ $v('basic_salary', 0) }}" required><div class="form-text">Per day = Basic ÷ {{ num_clean(setting('working_days')) }}</div></div>
@@ -95,6 +116,26 @@
         <a href="{{ $employee->exists ? route('employees.show', $employee) : route('employees.index') }}" class="btn btn-light">Cancel</a>
     </div>
 </form>
+@push('scripts')
+<script>
+(function () {
+    const input = document.getElementById('photoInput'), drop = document.getElementById('photoDrop');
+    const show = (file) => {
+        if (!file || !/^image\//.test(file.type)) { window.notify?.({type: 'warning', title: 'Not an image', message: 'Choose a JPG, PNG or WebP photo.'}); return; }
+        if (file.size > 3 * 1024 * 1024) { window.notify?.({type: 'warning', title: 'Photo too large', message: 'Please use a photo under 3 MB.'}); input.value = ''; return; }
+        const img = document.getElementById('photoPreview');
+        img.src = URL.createObjectURL(file); img.classList.remove('d-none');
+        document.getElementById('photoEmpty')?.remove();
+        drop.classList.add('pop');
+        window.notify?.({type: 'success', title: 'Photo ready', message: file.name + ' — it is saved when you save the employee.', duration: 3500});
+    };
+    input.addEventListener('change', () => show(input.files[0]));
+    ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) { const dt = new DataTransfer(); dt.items.add(f); input.files = dt.files; show(f); } });
+})();
+</script>
+@endpush
 @if ($employee->exists)
     <form method="POST" action="{{ route('employees.destroy', $employee) }}" class="mt-3" data-confirm="Delete this employee? Employees with payslips will be marked inactive instead.">
         @csrf @method('DELETE')

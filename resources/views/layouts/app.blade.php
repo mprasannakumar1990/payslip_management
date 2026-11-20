@@ -72,6 +72,8 @@ foreach ($nav as [, $items]) {
     <div class="loader-title">{{ setting('company_name') }}<small>Payslip &amp; HR Suite</small></div>
     <div class="loader-bar"><span></span></div>
 </div>
+{{-- the full-screen loader is shown only on the first page of a visit; later pages open instantly --}}
+<script>try { if (sessionStorage.getItem('pl-seen')) { document.getElementById('pageLoader').classList.add('hide', 'instant'); } sessionStorage.setItem('pl-seen', '1'); } catch (e) {}</script>
 <div id="topProgress"></div>
 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -217,6 +219,7 @@ foreach ($nav as [, $items]) {
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 @include('layouts._scripts')
 @include('layouts._toast')
+@include('layouts._motion')
 @if ($u->isSuperAdmin())
     @include('backups._reminder')
 @endif

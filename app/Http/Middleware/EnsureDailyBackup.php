@@ -20,7 +20,7 @@ class EnsureDailyBackup
 
     public function terminate(Request $request, $response): void
     {
-        if (! $request->user() || app()->runningUnitTests() || $request->expectsJson()) {
+        if (! $request->user() || app()->runningUnitTests() || $request->expectsJson() || $request->prefetch()) {
             return;
         }
         try {

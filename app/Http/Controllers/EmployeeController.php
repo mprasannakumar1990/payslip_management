@@ -146,6 +146,15 @@ class EmployeeController extends Controller
         ]);
     }
 
+    /** Employee photo (kept outside the public folder; only signed-in admins can see it). */
+    public function photo(Employee $employee)
+    {
+        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+        abort_unless($employee->photo_path && $disk->exists($employee->photo_path), 404);
+
+        return response()->file($disk->path($employee->photo_path), ['Cache-Control' => 'private, max-age=604800']);
+    }
+
     public function edit(Employee $employee)
     {
         return view('employees.form', [
@@ -225,8 +234,18 @@ class EmployeeController extends Controller
             'status' => ['required', Rule::in(['active', 'inactive', 'exited'])],
             'remarks' => ['nullable', 'string', 'max:1000'],
             'allowances.*' => ['nullable', 'numeric', 'min:0'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
+            'remove_photo' => ['nullable', 'boolean'],
         ]);
-        unset($data['allowances']);
+        unset($data['allowances'], $data['photo'], $data['remove_photo']);
+        if ($request->hasFile('photo')) {
+            $data['photo_path'] = $request->file('photo')->store('employee-photos', 'local');
+        } elseif ($request->boolean('remove_photo')) {
+            $data['photo_path'] = null;
+        }
+        if (array_key_exists('photo_path', $data) && $employee?->photo_path && $employee->photo_path !== $data['photo_path']) {
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->photo_path);
+        }
         foreach (['manager_special', 'factory_special', 'monthly_tax'] as $f) {
             $data[$f] = (float) ($data[$f] ?? 0);
         }

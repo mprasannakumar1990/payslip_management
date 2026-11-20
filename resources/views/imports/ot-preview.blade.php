@@ -93,4 +93,5 @@
 @endsection
 @push('scripts')
     @include('imports._verify')
+    @include('imports._colorize')
 @endpush

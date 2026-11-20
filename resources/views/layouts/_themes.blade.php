@@ -126,6 +126,40 @@
     @media (max-width: 399.98px) { .live-clock .lc-time [data-s], .live-clock .lc-time b:last-of-type { display: none; } }
     @media (prefers-reduced-motion: reduce) { .live-clock .lc-time b { animation: none; } }
 
+    /* employee avatars */
+    .emp-avatar { border-radius: 50%; object-fit: cover; flex: 0 0 auto; display: inline-grid; place-items: center; font-weight: 700; color: #fff;
+        background: #e5e7eb; box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(16,24,40,.12); }
+    .emp-initials { background: linear-gradient(135deg, hsl(var(--h) 75% 62%), hsl(calc(var(--h) + 40) 70% 46%)); letter-spacing: .02em; }
+    .emp-avatar.ring { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--accent-2), 0 8px 20px rgba(0,0,0,.18); }
+    .profile-cover { display: flex; align-items: center; gap: 1rem; padding: 1.2rem; color: #fff; background: radial-gradient(circle at 90% 10%, rgba(255,255,255,.2), transparent 45%), var(--hero); }
+    .photo-drop { width: 104px; height: 104px; flex: 0 0 104px; border-radius: 50%; border: 2px dashed var(--accent-line); background: var(--accent-softer);
+        display: grid; place-items: center; overflow: hidden; cursor: pointer; transition: border-color .2s, transform .2s, background .2s; }
+    .photo-drop:hover, .photo-drop.over { border-color: var(--accent); background: var(--accent-soft); transform: scale(1.04); }
+    .photo-drop img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-drop.pop { animation: pop .4s cubic-bezier(.2,.9,.3,1.4); }
+    .photo-drop .ph-empty { display: grid; place-items: center; color: var(--accent); text-align: center; } .photo-drop .ph-empty i { font-size: 1.7rem; }
+
+    /* celebrations */
+    .bday-hero { position: relative; overflow: hidden; border-radius: var(--radius); color: #fff; padding: 1.4rem 1.5rem;
+        background: radial-gradient(circle at 15% 20%, rgba(255,255,255,.22), transparent 40%), linear-gradient(120deg, #db2777, var(--accent-2) 50%, #facc15); box-shadow: var(--shadow-lg); }
+    .bday-hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .bday-faces { display: flex; } .bday-faces .emp-avatar + .emp-avatar { margin-left: -18px; }
+    .bday-faces .emp-avatar { animation: floaty 3s ease-in-out infinite; } .bday-faces .emp-avatar:nth-child(2) { animation-delay: .4s; }
+    @keyframes floaty { 50% { transform: translateY(-6px) rotate(-3deg); } }
+    .cel-row { display: flex; align-items: center; gap: .7rem; padding: .5rem .4rem; border-radius: 12px; color: inherit; transition: background .15s, transform .2s; }
+    .cel-row:hover { background: var(--accent-softer); }
+    .cel-row.today { background: linear-gradient(90deg, #fff7ed, #fdf2f8); }
+    .cel-when { font-size: .75rem; font-weight: 700; color: var(--accent); white-space: nowrap; background: var(--accent-soft); padding: .2rem .55rem; border-radius: 999px; }
+    .cel-row.today .cel-when { background: #fef3c7; color: #b45309; }
+
+    /* dynamic salary register */
+    .reg-key { padding: .1rem .5rem; border-radius: 6px; font-weight: 600; }
+    .reg-dyn th.g-add, .reg-key.f-add, .reg-dyn td.f-add { background: #ecfdf5 !important; color: #065f46; }
+    .reg-dyn th.g-red, .reg-key.f-red, .reg-dyn td.f-red { background: #fef2f2 !important; color: #991b1b; }
+    .reg-dyn th.g-allow, .reg-key.f-allow, .reg-dyn td.f-allow { background: #f5f3ff !important; color: #5b21b6; }
+    .reg-dyn th.g-gross, .reg-dyn th.g-net, .reg-dyn th.g-total { background: var(--accent-soft) !important; color: var(--accent-ink); }
+    .reg-dyn td.filled { font-weight: 600; }
+
     /* theme picker */
     .theme-pick .dropdown-menu { min-width: 230px; }
     .theme-pick .swatch { width: 26px; height: 26px; border-radius: 8px; flex: 0 0 26px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.4); }

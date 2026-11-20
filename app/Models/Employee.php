@@ -81,6 +81,39 @@ class Employee extends Model
         return $q->where('status', 'active');
     }
 
+    public function photoUrl(): ?string
+    {
+        return $this->photo_path ? route('employees.photo', [$this, 'v' => $this->updated_at?->timestamp]) : null;
+    }
+
+    public function initials(): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $this->name)) ?: [];
+
+        return strtoupper(mb_substr($parts[0] ?? '?', 0, 1).(count($parts) > 1 ? mb_substr(end($parts), 0, 1) : ''));
+    }
+
+    /** Stable colour per employee for the initials avatar. */
+    public function avatarHue(): int
+    {
+        return crc32((string) $this->emp_code) % 360;
+    }
+
+    /** Next birthday (today counts) or null. */
+    public function nextBirthday(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->date_of_birth) {
+            return null;
+        }
+        $today = now()->startOfDay();
+        $b = $this->date_of_birth->copy()->year($today->year);
+        if ($this->date_of_birth->month === 2 && $this->date_of_birth->day === 29 && ! $today->isLeapYear()) {
+            $b = \Illuminate\Support\Carbon::create($today->year, 2, 28);
+        }
+
+        return $b->lt($today) ? $b->addYearNoOverflow() : $b;
+    }
+
     public function leaveAllocations()
     {
         return $this->hasMany(LeaveAllocation::class);

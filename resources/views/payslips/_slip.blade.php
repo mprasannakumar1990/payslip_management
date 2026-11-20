@@ -12,8 +12,8 @@
     ], fn ($v, $k) => $v != 0 || $k === 'BASIC SALARY', ARRAY_FILTER_USE_BOTH);
     $deductions = array_filter([
         'EPF' => $p->pf, 'ESIC' => $p->esi, 'TAX' => $p->tax, 'ADVANCE' => $p->advance, 'MISC' => $p->other_deduction,
-    ], fn ($v, $k) => $v != 0 || in_array($k, ['EPF', 'ESIC']), ARRAY_FILTER_USE_BOTH);
-    $allowances = collect($p->allowances ?? [])->pluck('amount', 'name')->all();
+    ], fn ($v) => $v != 0); // only deductions that apply to this employee
+    $allowances = collect($p->allowances ?? [])->filter(fn ($a) => (float) ($a['amount'] ?? 0) != 0)->pluck('amount', 'name')->all();
     if ($p->attendance_bonus) { $allowances['Attendance'] = $p->attendance_bonus; }
     if ($p->birthday_welfare) { $allowances['Birthday Welfare'] = $p->birthday_welfare; }
     $rows = max(count($earnings), count($deductions));

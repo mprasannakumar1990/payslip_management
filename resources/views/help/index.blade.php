@@ -10,6 +10,7 @@
         ['monthly', 'Monthly payslip workflow', 'bi-list-check'],
         ['yearly', 'Yearly cycle', 'bi-calendar3'],
         ['employees', 'Employees', 'bi-people'],
+        ['celebrations', 'Photos & celebrations', 'bi-balloon-heart'],
         ['leave', 'Leave management', 'bi-calendar2-check'],
         ['ot', 'OT & shift hours', 'bi-clock-history'],
         ['payroll', 'Payroll & payslips', 'bi-cash-stack'],
@@ -113,6 +114,8 @@
                     <span class="kbd-chip"><i class="bi bi-x-octagon-fill text-danger"></i> Error</span>
                     <span class="kbd-chip"><i class="bi bi-info-circle-fill text-info"></i> Note</span>
                 </div>
+                <h6>Fast pages &amp; animations</h6>
+                <p class="mb-2">When you rest the pointer on a link, the page is fetched in the background, so it opens almost instantly when you click. Pages slide smoothly into each other while the menu stays in place, table rows and figures animate in, and buttons ripple when pressed. The full-screen loading animation only appears on the first page after opening the app. If your computer is set to <em>reduce motion</em>, animations are switched off.</p>
                 <h6>Confirmations</h6>
                 <p class="mb-0">Anything that changes data asks you to confirm first. Important actions (generating or finalizing payroll, approving all OT…) ask <strong>twice</strong>: the second step needs the tick box <em>“I have checked the details”</em>. Closing the dialog cancels and nothing changes. Filters apply as soon as you change them; there is no Search button.</p>
             </div>
@@ -185,6 +188,23 @@
             </div>
         </div>
 
+        {{-- 4b photos & celebrations --}}
+        <div class="card help-sec mb-3" id="celebrations">
+            <div class="card-header"><span class="h-ico"><i class="bi bi-balloon-heart"></i></span> Photos &amp; celebrations</div>
+            <div class="card-body">
+                <h6 class="mt-0">Employee photo</h6>
+                <p>On <em>Register / Edit employee</em>, click the round photo box (or drag a picture onto it). JPG, PNG or WebP up to 3 MB; you see a preview straight away and the photo is saved with the employee. Tick <em>Remove photo</em> to delete it. Without a photo, coloured initials are shown. Photos appear on the employee list, the employee page, the dashboard and the birthday wishes. They are stored privately and only signed-in admins can see them.</p>
+                <h6>On the dashboard</h6>
+                <ul class="mb-2">
+                    <li><strong>Birthday today:</strong> a celebration banner with the employee's photo, age and confetti, plus a wish in the top-right messages. Press <span class="kbd-chip"><i class="bi bi-stars"></i> Celebrate</span> for more confetti.</li>
+                    <li><strong>Birthdays · next 30 days:</strong> who has a birthday soon and in how many days.</li>
+                    <li><strong>Work anniversaries · next 30 days:</strong> employees completing another year of service (from the joining date).</li>
+                    <li><strong>Joined &amp; left:</strong> new joiners and exits of the selected year, with photos.</li>
+                </ul>
+                <div class="tip mb-0">Birthdays need the <em>Date of birth</em> on the employee record. A 🎂 badge also shows next to the name on the employee list on the day.</div>
+            </div>
+        </div>
+
         {{-- 5 leave --}}
         <div class="card help-sec mb-3" id="leave">
             <div class="card-header"><span class="h-ico"><i class="bi bi-calendar2-check"></i></span> Leave management</div>
@@ -247,7 +267,12 @@
                     <li><strong>Finalize</strong> locks the month. @if ($isSuper)As Super Admin you can <strong>Re-open</strong> or <strong>Delete</strong> a run if a correction is needed.@else Only a Super Admin can re-open it.@endif</li>
                     <li><strong>Email</strong> sends each payslip PDF to the employee's email (set up SMTP in Settings → Email first).</li>
                 </ul>
-                <p class="small text-muted mb-0">The payroll list shows one year at a time with totals for gross, net and payable.</p>
+                <h6>Only filled columns and lines</h6>
+                <ul class="mb-2">
+                    <li>The <strong>salary register</strong> hides columns that are empty for the whole month (e.g. no 3rd shift, no tax, no advance) and shows them automatically as soon as one employee has a value. Click <em>show all columns</em> to see every column. Filled cells are coloured: <span class="reg-key f-add">Addition</span> <span class="reg-key f-red">Reduction</span> <span class="reg-key f-allow">Allowance</span>.</li>
+                    <li>Each <strong>payslip</strong> (screen, PDF and email) lists only the earnings, deductions and allowances that apply to that employee that month.</li>
+                </ul>
+                <p class="small text-muted mb-0">The payroll list shows one year at a time with totals for gross, net and payable. The Excel export keeps every column, in the layout of the original salary sheet.</p>
             </div>
         </div>
 
@@ -270,8 +295,8 @@
             <div class="card-body">
                 <ol class="mb-2">
                     <li>Open <a href="{{ route('imports.index') }}">Import Data</a> and download the <strong>template</strong> (it already lists your employees).</li>
-                    <li>Fill it in Excel, choose the month (OT) or year (leave register) and upload.</li>
-                    <li>A <strong>preview</strong> checks every row: unknown Emp IDs, wrong numbers, too many hours, locked months. If the workbook has several sheets you can switch sheet.</li>
+                    <li>Fill it in Excel, choose the month (OT) or year (leave register), then <strong>drag the file onto the coloured box</strong> (or click it) and press <span class="kbd-chip">Upload &amp; verify</span>. The box turns green and shows the file name when it is ready.</li>
+                    <li>A <strong>preview</strong> checks every row: unknown Emp IDs, wrong numbers, too many hours, locked months. If the workbook has several sheets you can switch sheet. Rows are colour-coded: <span class="badge bg-success">green edge = ready</span> <span class="badge bg-warning">amber = check</span> <span class="badge bg-danger">red = error</span>, and every filled value is tinted green. Use the chips <em>All / Ready / Check / Errors</em> above the table to show one kind of row.</li>
                     <li>Fix or skip problem rows, then confirm. Nothing is saved before this step.</li>
                 </ol>
                 <div class="tip mb-0">Employees are matched by Emp ID, then by name. Importing again for the same month/year replaces the earlier import.</div>

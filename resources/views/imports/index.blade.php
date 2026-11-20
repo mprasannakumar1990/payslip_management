@@ -59,7 +59,12 @@
                             <select name="year" class="form-select mb-2">@foreach (year_options() as $y)<option @selected($y == $period->year)>{{ $y }}</option>@endforeach</select>
                         @endif
                         <label class="form-label">File *</label>
-                        <input type="file" name="file" accept=".xlsx,.xls,.csv" class="form-control mb-3" required>
+                        <label class="xl-drop mb-3 drop-{{ $type }}">
+                            <input type="file" name="file" accept=".xlsx,.xls,.csv" required>
+                            <span class="xl-ico"><i class="bi bi-file-earmark-spreadsheet"></i></span>
+                            <span class="xl-text"><strong>Drop your Excel file here</strong><small>or click to choose · .xlsx .xls .csv</small></span>
+                            <span class="xl-file"><i class="bi bi-file-earmark-excel-fill"></i> <span data-name></span> <small data-size></small></span>
+                        </label>
                         <button class="btn btn-primary w-100"><i class="bi bi-search"></i> Upload &amp; verify</button>
                     </form>
                 </div>
@@ -68,3 +73,42 @@
     @endforeach
 </div>
 @endsection
+@push('styles')
+<style>
+    .xl-drop { position: relative; display: flex; align-items: center; gap: .8rem; padding: 1rem; border-radius: 14px; cursor: pointer; border: 2px dashed var(--c, #7c3aed);
+        background: repeating-linear-gradient(135deg, var(--cs, #faf5ff), var(--cs, #faf5ff) 12px, #fff 12px, #fff 24px); transition: transform .2s, box-shadow .2s, background .3s; }
+    .xl-drop.drop-ot { --c: #ea580c; --cs: #fff7ed; } .xl-drop.drop-leave { --c: #059669; --cs: #ecfdf5; } .xl-drop.drop-employees { --c: #4f46e5; --cs: #eef2ff; }
+    .xl-drop:hover, .xl-drop.over { transform: translateY(-2px) scale(1.01); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
+    .xl-drop.over { background: var(--cs); }
+    .xl-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .xl-ico { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 14px; display: grid; place-items: center; font-size: 1.5rem; color: #fff; background: var(--c); box-shadow: 0 6px 14px rgba(0,0,0,.15); }
+    .xl-drop.over .xl-ico { animation: bounce .6s ease infinite; }
+    @keyframes bounce { 50% { transform: translateY(-5px); } }
+    .xl-text { display: flex; flex-direction: column; line-height: 1.25; } .xl-text small { color: var(--muted); }
+    .xl-file { display: none; font-weight: 600; color: var(--c); }
+    .xl-drop.has-file { border-style: solid; background: var(--cs); }
+    .xl-drop.has-file .xl-text { display: none; } .xl-drop.has-file .xl-file { display: block; animation: pop .35s cubic-bezier(.2,.9,.3,1.4); }
+    .xl-drop.has-file .xl-ico { background: #16a34a; }
+</style>
+@endpush
+@push('scripts')
+<script>
+document.querySelectorAll('.xl-drop').forEach(drop => {
+    const input = drop.querySelector('input[type=file]');
+    const show = () => {
+        const f = input.files[0];
+        drop.classList.toggle('has-file', !!f);
+        if (!f) return;
+        drop.querySelector('[data-name]').textContent = f.name;
+        drop.querySelector('[data-size]').textContent = '(' + (f.size / 1024).toFixed(1) + ' KB)';
+        const ok = /\.(xlsx|xls|csv)$/i.test(f.name);
+        window.notify?.(ok ? {type: 'success', title: 'File ready', message: f.name + ' — click “Upload & verify”.', duration: 3500}
+                           : {type: 'warning', title: 'Not an Excel file', message: 'Please choose a .xlsx, .xls or .csv file.'});
+    };
+    input.addEventListener('change', show);
+    ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, () => drop.classList.add('over')));
+    ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, () => drop.classList.remove('over')));
+    drop.addEventListener('drop', () => setTimeout(show, 0));
+});
+</script>
+@endpush

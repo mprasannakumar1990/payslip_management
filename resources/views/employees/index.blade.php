@@ -33,7 +33,15 @@
             @forelse ($employees as $e)
                 <tr>
                     <td><a href="{{ route('employees.show', $e) }}" class="fw-semibold">{{ $e->emp_code }}</a></td>
-                    <td>{{ $e->name }} @unless($e->email)<i class="bi bi-envelope-slash text-warning" title="No email address — payslip cannot be emailed"></i>@endunless</td>
+                    <td>
+                        <a href="{{ route('employees.show', $e) }}" class="d-flex align-items-center gap-2 text-body">
+                            @include('partials.avatar', ['e' => $e, 'size' => 34])
+                            <span class="min-w-0"><span class="fw-semibold">{{ $e->name }}</span>
+                                @unless($e->email)<i class="bi bi-envelope-slash text-warning" title="No email address — payslip cannot be emailed"></i>@endunless
+                                @if ($e->nextBirthday()?->isToday())<span class="badge bg-warning" title="Birthday today">🎂 Birthday</span>@endif
+                            </span>
+                        </a>
+                    </td>
                     <td class="small">{{ $e->designation }}</td>
                     <td>{{ $e->grade }}</td>
                     <td class="small">{{ $e->ot_group }}</td>

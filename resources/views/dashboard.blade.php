@@ -93,6 +93,72 @@
     @endforeach
 </div>
 
+{{-- ===== celebrations: birthdays today, upcoming birthdays, work anniversaries ===== --}}
+@if ($birthdaysToday->isNotEmpty())
+    <div class="bday-hero mb-3" id="bdayHero">
+        <canvas id="confetti" aria-hidden="true"></canvas>
+        <div class="d-flex flex-wrap align-items-center gap-3 position-relative">
+            <div class="bday-faces">
+                @foreach ($birthdaysToday->take(4) as $e)@include('partials.avatar', ['e' => $e, 'size' => 76, 'ring' => 'ring'])@endforeach
+            </div>
+            <div class="flex-grow-1">
+                <div class="small fw-semibold text-uppercase opacity-75">🎉 Celebration today</div>
+                <div class="fs-3 fw-bold lh-sm">Happy Birthday, {{ $birthdaysToday->pluck('name')->join(', ', ' & ') }}!</div>
+                <div class="opacity-75">Wishing {{ $birthdaysToday->count() > 1 ? 'them' : 'you' }} a wonderful year ahead from everyone at {{ setting('company_name') }}.
+                    @foreach ($birthdaysToday as $e)@if ($e->date_of_birth)<span class="badge bg-light ms-1">{{ $e->name }} turns {{ $e->date_of_birth->age }}</span>@endif @endforeach
+                </div>
+            </div>
+            <button type="button" class="btn btn-light fw-semibold" id="moreConfetti"><i class="bi bi-stars"></i> Celebrate</button>
+        </div>
+    </div>
+@endif
+
+<div class="row g-3 mb-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-balloon-heart"></i> Birthdays · next 30 days</span>
+                <span class="badge bg-warning">{{ $birthdays->count() }}</span>
+            </div>
+            <div class="card-body py-2 celebrate-list">
+                @forelse ($birthdays->take(6) as $e)
+                    @php($nb = $e->nextBirthday())
+                    @php($days = (int) now()->startOfDay()->diffInDays($nb, true))
+                    <a href="{{ route('employees.show', $e) }}" class="cel-row {{ $days === 0 ? 'today' : '' }}">
+                        @include('partials.avatar', ['e' => $e, 'size' => 40])
+                        <span class="flex-grow-1 min-w-0"><span class="d-block fw-semibold text-truncate text-body">{{ $e->name }}</span>
+                            <span class="small text-muted">{{ $nb->format('D, d M') }} · turns {{ $nb->year - $e->date_of_birth->year }}</span></span>
+                        <span class="cel-when">{{ $days === 0 ? '🎂 Today' : ($days === 1 ? 'Tomorrow' : "in $days days") }}</span>
+                    </a>
+                @empty
+                    <p class="text-muted small my-3">No birthdays in the next 30 days. Add dates of birth on the employee records to see them here.</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-award"></i> Work anniversaries · next 30 days</span>
+                <span class="badge bg-primary">{{ $anniversaries->count() }}</span>
+            </div>
+            <div class="card-body py-2 celebrate-list">
+                @forelse ($anniversaries->take(6) as $e)
+                    @php($days = (int) now()->startOfDay()->diffInDays($e->anniv_date, true))
+                    <a href="{{ route('employees.show', $e) }}" class="cel-row {{ $days === 0 ? 'today' : '' }}">
+                        @include('partials.avatar', ['e' => $e, 'size' => 40])
+                        <span class="flex-grow-1 min-w-0"><span class="d-block fw-semibold text-truncate text-body">{{ $e->name }}</span>
+                            <span class="small text-muted">Joined {{ $e->date_of_joining->format('d M Y') }} · completes <strong>{{ $e->anniv_years }} year{{ $e->anniv_years > 1 ? 's' : '' }}</strong></span></span>
+                        <span class="cel-when">{{ $days === 0 ? '🏆 Today' : $e->anniv_date->format('d M') }}</span>
+                    </a>
+                @empty
+                    <p class="text-muted small my-3">No work anniversaries in the next 30 days.</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row g-3 mb-3">
     {{-- payroll by month --}}
     <div class="col-xl-8">
@@ -258,7 +324,7 @@
                 @forelse ($joiners->map(fn ($e) => [$e, 'in', $e->date_of_joining])->concat($leavers->map(fn ($e) => [$e, 'out', $e->date_of_exit]))->sortByDesc(fn ($x) => $x[2])->take(8) as [$e, $dir, $date])
                     <li class="list-group-item d-flex align-items-center gap-2">
                         <span class="badge {{ $dir === 'in' ? 'bg-success-subtle text-success-emphasis' : 'bg-danger-subtle text-danger-emphasis' }}"><i class="bi {{ $dir === 'in' ? 'bi-box-arrow-in-right' : 'bi-box-arrow-right' }}"></i> {{ $dir === 'in' ? 'Joined' : 'Left' }}</span>
-                        <a href="{{ route('employees.show', [$e, 'year' => $year]) }}" class="flex-grow-1 text-truncate">{{ $e->emp_code }} · {{ $e->name }}</a>
+                        @include('partials.avatar', ['e' => $e, 'size' => 32])<a href="{{ route('employees.show', [$e, 'year' => $year]) }}" class="flex-grow-1 text-truncate">{{ $e->emp_code }} · {{ $e->name }}</a>
                         <span class="small text-muted text-nowrap">{{ $date->format('d M') }}</span>
                     </li>
                 @empty
@@ -300,3 +366,33 @@
     @endif
 </div>
 @endsection
+@push('scripts')
+<script>
+(function () {
+    // birthday wishes: toast + a short burst of confetti (respects "reduce motion")
+    const names = @json($birthdaysToday->pluck('name'));
+    if (!names.length) return;
+    window.addEventListener('load', () => setTimeout(() => window.notify?.({type: 'success', title: '🎂 Birthday today', message: 'Happy birthday, ' + names.join(', ') + '!', duration: 7000}), 600));
+    const canvas = document.getElementById('confetti');
+    if (!canvas || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = canvas.getContext('2d');
+    const colors = ['#f97316', '#a855f7', '#facc15', '#22d3ee', '#ec4899', '#22c55e'];
+    let parts = [], raf = null;
+    const size = () => { canvas.width = canvas.offsetWidth * devicePixelRatio; canvas.height = canvas.offsetHeight * devicePixelRatio; };
+    function burst(n) {
+        size();
+        for (let i = 0; i < n; i++) parts.push({x: Math.random() * canvas.width, y: -20 - Math.random() * canvas.height * .5, r: (4 + Math.random() * 5) * devicePixelRatio,
+            vx: (Math.random() - .5) * 2, vy: (2 + Math.random() * 3) * devicePixelRatio, rot: Math.random() * 6, vr: (Math.random() - .5) * .3, c: colors[i % colors.length]});
+        if (!raf) loop();
+    }
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.rot += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); });
+        parts = parts.filter(p => p.y < canvas.height + 20);
+        raf = parts.length ? requestAnimationFrame(loop) : null;
+    }
+    burst(160);
+    document.getElementById('moreConfetti')?.addEventListener('click', () => burst(200));
+})();
+</script>
+@endpush
