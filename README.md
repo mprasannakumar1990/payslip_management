@@ -136,3 +136,5 @@ On the December workflow page, **Close leave year** saves each employee's EL cre
 | Gratuity | Basic ÷ 26 × 15 × years of service |
 
 Generated against the Nov 2025 sheet, 30 of 36 payslips match to the rupee. The other 6 hold one-off manual entries in Excel (birthday welfare, Spl OT ₹486, a capped OT pay, manually removed attendance bonus). Enter those through *Edit payslip*.
+#   p a y s l i p _ m a n a g e m e n t  
+ 
