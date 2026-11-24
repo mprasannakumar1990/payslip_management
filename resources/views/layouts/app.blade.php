@@ -140,6 +140,7 @@ foreach ($nav as [, $items]) {
             <ul class="dropdown-menu dropdown-menu-end shadow">
                 <li class="px-3 pt-1 pb-2 small text-muted fw-semibold">Colour theme</li>
                 @foreach ([
+                    'seoul' => ['Seoul Night · 서울의 밤', 'linear-gradient(135deg,#0a1630 33%,#c8102e 33% 66%,#f2b632 66%)'],
                     'purple-orange' => ['Purple & Orange', 'linear-gradient(135deg,#4c1d95 50%,#f97316 50%)'],
                     'purple' => ['Royal Purple', 'linear-gradient(135deg,#3b0764,#a855f7)'],
                     'orange' => ['Sunset Orange', 'linear-gradient(135deg,#c2410c,#f59e0b)'],

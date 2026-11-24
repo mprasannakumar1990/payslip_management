@@ -25,6 +25,21 @@
         --hero: linear-gradient(120deg, #3b0764, #6d28d9 55%, #ea580c);
         --bar: linear-gradient(180deg, #fdba74, #f97316);
     }
+    /* 0 · Seoul Night (서울의 밤): navy, Korean red and gold */
+    html[data-theme="seoul"] {
+        --sb-bg: linear-gradient(180deg, #07122b 0%, #0d2150 55%, #12306b 100%);
+        --sb-glow-1: rgba(200,16,46,.28); --sb-glow-2: rgba(242,182,50,.2);
+        --sb-text: #eef3ff; --sb-muted: rgba(203,215,245,.6);
+        --marker: #f2b632; --marker-ink: #07122b;
+        --logo-bg: linear-gradient(135deg, #c8102e, #f2b632);
+        --accent: #c8102e; --accent-dark: #a50d26; --accent-ink: #8a0b20; --accent-soft: #fde8ec; --accent-softer: #fff6f7;
+        --accent-line: #f7c4cd; --accent-shadow: rgba(200,16,46,.2);
+        --accent-2: #2f6fd6; --accent-2-soft: #eef4ff;
+        --body-bg: linear-gradient(160deg, #f5f7fc 0%, #fff8f0 100%);
+        --body-band: linear-gradient(120deg, rgba(16,42,99,.10), rgba(200,16,46,.07));
+        --hero: linear-gradient(120deg, #07122b, #12306b 55%, #c8102e);
+        --bar: linear-gradient(180deg, #f2b632, #c8102e);
+    }
     /* 2 · Royal Purple */
     html[data-theme="purple"] {
         --sb-bg: linear-gradient(180deg, #1e1b4b 0%, #3b0764 55%, #581c87 100%);
