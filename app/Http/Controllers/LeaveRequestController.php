@@ -21,7 +21,13 @@ class LeaveRequestController extends Controller
     public function index(Request $request)
     {
         $year = (int) ($request->input('year') ?: active_year());
-        $month = (int) $request->input('month'); // 1-12 within the selected year
+        $month = (string) $request->input('month');
+        if (preg_match('/^(\d{4})-(\d{1,2})$/', $month, $m)) { // older links: month=YYYY-MM
+            [$year, $month] = [(int) $m[1], (int) $m[2]];
+        }
+        $month = (int) $month;
+        $month = $month >= 1 && $month <= 12 ? $month : 0; // 1-12 within the selected year, 0 = whole year
+        $year = $year >= 2000 && $year <= 2100 ? $year : active_year();
         $start = Carbon::create($year, $month ?: 1, 1);
         $end = $month ? $start->copy()->endOfMonth() : Carbon::create($year, 12, 31);
         $inPeriod = fn ($q) => $q->whereDate('from_date', '<=', $end)->whereDate('to_date', '>=', $start);

@@ -23,7 +23,8 @@ class ActiveYear
             $year = null;
             if (preg_match('/^\d{4}$/', (string) $request->query('year'))) {
                 $year = (int) $request->query('year');
-            } elseif (preg_match('/^(\d{4})-\d{2}$/', (string) $request->query('period'), $m)) {
+            } elseif (preg_match('/^(\d{4})-\d{2}$/', (string) $request->query('period'), $m)
+                || preg_match('/^(\d{4})-\d{1,2}$/', (string) $request->query('month'), $m)) {
                 $year = (int) $m[1];
             }
             if ($year && $year >= 2000 && $year <= (int) now()->year + 1) {

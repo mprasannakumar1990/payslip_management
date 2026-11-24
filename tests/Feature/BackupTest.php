@@ -21,6 +21,49 @@ class BackupTest extends TestCase
         $this->actingAs($super)->get('/backups')->assertOk()->assertSee('Database Backups');
     }
 
+    public function test_excel_copy_has_every_table_with_data_and_hides_secrets(): void
+    {
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        Setting::put(['mail_password' => 'encrypted-secret']);
+        $xlsx = sys_get_temp_dir().DIRECTORY_SEPARATOR.'bk-'.uniqid().'.xlsx';
+        app(BackupService::class)->excel($xlsx);
+
+        $book = \PhpOffice\PhpSpreadsheet\IOFactory::load($xlsx);
+        $names = $book->getSheetNames();
+        $this->assertSame('Summary', $names[0]);
+        $this->assertContains('Employees', $names);
+        $this->assertContains('Payslips', $names);
+        $this->assertNotContains('sessions', $names);
+        $emp = $book->getSheetByName('Employees');
+        $this->assertSame('id', $emp->getCell('A1')->getValue());
+        $this->assertSame(\App\Models\Employee::count() + 1, $emp->getHighestDataRow()); // heading + every employee
+        $users = $book->getSheetByName('Admin Users')->toArray();
+        $pw = array_search('password', $users[0], true);
+        $this->assertSame('(hidden)', $users[1][$pw]);
+        $settings = collect($book->getSheetByName('Settings')->toArray());
+        $this->assertSame('(hidden)', $settings->first(fn ($r) => ($r[1] ?? null) === 'mail_password')[2]);
+        @unlink($xlsx);
+    }
+
+    public function test_sql_and_excel_can_be_downloaded_from_the_zip(): void
+    {
+        $super = User::factory()->create(['role' => 'super_admin']);
+        $svc = app(BackupService::class);
+        $name = BackupService::PREFIX.'test-2026-11-24_100000.zip';
+        $zip = new \ZipArchive();
+        $zip->open($svc->dir().DIRECTORY_SEPARATOR.$name, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->addFromString('dump.sql', '-- sql dump');
+        $zip->addFromString('dump.xlsx', 'xlsx-bytes');
+        $zip->close();
+
+        $this->actingAs($super)->get(route('backups.index'))->assertSee('format=xlsx', false)->assertSee('format=sql', false);
+        $r = $this->actingAs($super)->get(route('backups.download', [$name, 'format' => 'xlsx']))->assertOk();
+        $this->assertStringContainsString('dump.xlsx', $r->headers->get('content-disposition'));
+        $this->actingAs($super)->get(route('backups.download', [$name, 'format' => 'sql']))->assertOk();
+        $this->actingAs($super)->get(route('backups.download', $name))->assertOk();
+        @unlink($svc->dir().DIRECTORY_SEPARATOR.$name);
+    }
+
     public function test_download_rejects_unsafe_names(): void
     {
         $super = User::factory()->create(['role' => 'super_admin']);

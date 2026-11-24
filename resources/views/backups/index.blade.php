@@ -72,7 +72,9 @@
                             <td>{{ $f['at']->format('d M Y, h:i A') }} <span class="small text-muted">({{ $f['at']->diffForHumans() }})</span></td>
                             <td class="num">{{ \App\Services\BackupService::size($f['size']) }}</td>
                             <td class="text-end text-nowrap">
-                                <a href="{{ route('backups.download', $f['name']) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-download"></i> Download</a>
+                                <a href="{{ route('backups.download', $f['name']) }}" class="btn btn-sm btn-outline-primary" title="Whole backup package"><i class="bi bi-file-earmark-zip"></i> ZIP</a>
+                                @if ($f['sql'])<a href="{{ route('backups.download', [$f['name'], 'format' => 'sql']) }}" class="btn btn-sm btn-outline-secondary" title="MySQL dump (.sql) — used to restore"><i class="bi bi-filetype-sql"></i> SQL</a>@endif
+                                @if ($f['xlsx'])<a href="{{ route('backups.download', [$f['name'], 'format' => 'xlsx']) }}" class="btn btn-sm btn-outline-success" title="All data in Excel, one sheet per table"><i class="bi bi-file-earmark-excel"></i> Excel</a>@endif
                                 <form method="POST" action="{{ route('backups.destroy', $f['name']) }}" class="d-inline" data-confirm="Delete the backup {{ $f['name'] }}? It cannot be recovered." data-confirm-title="Delete backup" data-confirm-level="double">@csrf @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
                                 </form>
@@ -84,7 +86,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer bg-white small text-muted">Stored in <code>{{ $dir }}</code> (not reachable from the web). Each backup is a ZIP package with a full MySQL dump (.sql) of the whole database and a README with restore steps. Older backups may be .sql.gz.</div>
+            <div class="card-footer bg-white small text-muted">Stored in <code>{{ $dir }}</code> (not reachable from the web). Each backup is a ZIP package with a full MySQL dump (.sql) of the whole database, an Excel copy of all data (.xlsx, one sheet per table) and a README with restore steps. Download the whole ZIP, or only the SQL or the Excel file. Restore always uses the .sql file; the Excel copy is for viewing. Passwords are hidden in the Excel copy. Older backups may have no Excel file or be .sql.gz.</div>
         </div>
     </div>
     <div class="col-xl-4">

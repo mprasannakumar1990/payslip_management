@@ -6,6 +6,8 @@ use App\Models\ActivityLog;
 use App\Models\Setting;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 
@@ -93,9 +95,18 @@ class BackupService
                 if (! $this->looksComplete($sql)) {
                     throw new \RuntimeException('The backup is incomplete. '.trim($errors));
                 }
-                $this->zip($path, $sql, $base.'.sql', $db['database'], $trigger);
+                // Excel copy of all data (one sheet per table). A problem here never stops the SQL backup.
+                $xlsx = $this->dir().DIRECTORY_SEPARATOR.$base.'.xlsx.part';
+                try {
+                    $this->excel($xlsx);
+                } catch (\Throwable $e) {
+                    @unlink($xlsx);
+                    $errors .= ' Excel copy skipped: '.$e->getMessage();
+                }
+                $this->zip($path, $sql, $base.'.sql', $db['database'], $trigger, is_file($xlsx) ? $xlsx : null, $base.'.xlsx');
             } finally {
                 @unlink($sql);
+                @unlink($xlsx ?? '');
             }
             $size = filesize($path);
 
@@ -159,8 +170,68 @@ class BackupService
         return str_contains($tail, '-- Dump completed');
     }
 
-    /** Package the dump as a ZIP with a short README on how to restore it. */
-    private function zip(string $zipPath, string $sqlFile, string $sqlName, string $database, string $trigger): void
+    /** Tables left out of the Excel copy: framework internals with no business data. */
+    public const EXCEL_SKIP = ['sessions', 'cache', 'cache_locks', 'jobs', 'job_batches', 'failed_jobs', 'password_reset_tokens', 'migrations'];
+
+    /** Columns never written to Excel in readable form. */
+    private const EXCEL_MASK = ['password', 'remember_token'];
+
+    /** Readable sheet names for the main tables. */
+    private const EXCEL_TITLES = [
+        'employees' => 'Employees', 'employee_allowances' => 'Employee Allowances', 'allowance_types' => 'Allowance Types',
+        'leave_types' => 'Leave Types', 'leave_allocations' => 'Leave Allocations', 'leave_requests' => 'Leave Requests',
+        'leave_adjustments' => 'Monthly Leave', 'el_ledgers' => 'EL Ledger', 'ot_entries' => 'OT Entries',
+        'payroll_runs' => 'Payroll Runs', 'payslips' => 'Payslips', 'settlements' => 'Settlements',
+        'settings' => 'Settings', 'users' => 'Admin Users', 'activity_logs' => 'Activity Log',
+    ];
+
+    /**
+     * Write every business table (structure = column headings, all rows) to an .xlsx workbook, one sheet per table,
+     * plus a "Summary" sheet listing the tables and row counts.
+     */
+    public function excel(string $path): void
+    {
+        $schema = DB::getDriverName() === 'sqlite' ? null : DB::getDatabaseName();
+        $tables = collect(Schema::getTableListing($schema, false))->reject(fn ($t) => in_array($t, self::EXCEL_SKIP, true))
+            ->sortBy(fn ($t) => [array_search($t, array_keys(self::EXCEL_TITLES), true) === false ? 1 : 0, array_search($t, array_keys(self::EXCEL_TITLES), true), $t])
+            ->values();
+        $book = new \App\Support\XlsxBuilder();
+        $summary = [];
+        $sheets = [];
+        foreach ($tables as $table) {
+            $columns = Schema::getColumnListing($table);
+            $rows = DB::table($table)->orderBy($columns[0] ?? 'id')->get()->map(function ($r) use ($columns) {
+                $out = [];
+                foreach ($columns as $c) {
+                    $v = $r->$c ?? null;
+                    $secret = in_array($c, self::EXCEL_MASK, true) || ($c === 'value' && isset($r->key) && str_contains((string) $r->key, 'password'));
+                    if ($secret && $v !== null && $v !== '') {
+                        $v = '(hidden)';
+                    } elseif (is_string($v) && preg_match('/^-?(0|[1-9]\d{0,14})(\.\d+)?$/', $v)) {
+                        $v = str_contains($v, '.') ? (float) $v : (int) $v; // numbers as numbers; IDs with leading zeros stay text
+                    }
+                    $out[] = $v;
+                }
+
+                return $out;
+            });
+            $title = self::EXCEL_TITLES[$table] ?? $table;
+            $sheets[] = [$title, $columns, $rows];
+            $summary[] = [$title, $table, count($columns), $rows->count()];
+        }
+        $book->sheet('Summary', ['Sheet', 'Database table', 'Columns', 'Rows'], array_merge(
+            [['Backup of '.setting('company_name').' — '.now()->format('d M Y h:i A').' IST', '', '', '']],
+            $summary,
+            [['Total', '', array_sum(array_column($summary, 2)), array_sum(array_column($summary, 3))]]
+        ), ['highlight' => ['/^Backup of/' => 'E0E7FF', '/^Total$/' => 'F1F5F9']]);
+        foreach ($sheets as [$title, $columns, $rows]) {
+            $book->sheet($title, $columns, $rows, ['autofilter' => true]);
+        }
+        $book->save($path);
+    }
+
+    /** Package the dump (and the Excel copy) as a ZIP with a short README on how to restore it. */
+    private function zip(string $zipPath, string $sqlFile, string $sqlName, string $database, string $trigger, ?string $xlsxFile = null, ?string $xlsxName = null): void
     {
         $zip = new \ZipArchive();
         $tmp = $zipPath.'.part';
@@ -169,6 +240,9 @@ class BackupService
         }
         $zip->addFile($sqlFile, $sqlName);
         $zip->setCompressionName($sqlName, \ZipArchive::CM_DEFLATE, 9);
+        if ($xlsxFile) {
+            $zip->addFile($xlsxFile, $xlsxName);
+        }
         $zip->addFromString('README.txt', implode("\r\n", [
             setting('company_name').' - Payslip & HR Suite',
             'Database backup',
@@ -177,6 +251,7 @@ class BackupService
             'Created  : '.now()->format('d M Y h:i:s A'),
             'Type     : '.$trigger,
             'File     : '.$sqlName.' (full MySQL dump: all table structures + all data, one row per INSERT)',
+            $xlsxFile ? 'Excel    : '.$xlsxName.' (all data, one sheet per table, for viewing only; restore from the .sql file)' : 'Excel    : not included',
             '',
             'HOW TO RESTORE (this replaces ALL current data):',
             '1. In the app, take a fresh backup first (Database Backups -> Back up now).',
@@ -220,8 +295,50 @@ class BackupService
     public function list(): array
     {
         return collect($this->files($this->dir()))
-            ->map(fn ($f) => ['name' => basename($f), 'size' => filesize($f), 'at' => Carbon::createFromTimestamp(filemtime($f))])
+            ->map(fn ($f) => ['name' => basename($f), 'size' => filesize($f), 'at' => Carbon::createFromTimestamp(filemtime($f)),
+                'sql' => (bool) $this->entry($f, 'sql'), 'xlsx' => (bool) $this->entry($f, 'xlsx')])
             ->sortByDesc('at')->values()->all();
+    }
+
+    /** Name of the .sql / .xlsx file inside a backup ZIP, or null (older .sql.gz backups have no ZIP entries). */
+    public function entry(string $zipPath, string $ext): ?string
+    {
+        if (! str_ends_with($zipPath, '.zip')) {
+            return null;
+        }
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::RDONLY) !== true) {
+            return null;
+        }
+        try {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $n = $zip->getNameIndex($i);
+                if (str_ends_with(strtolower($n), '.'.$ext)) {
+                    return $n;
+                }
+            }
+
+            return null;
+        } finally {
+            $zip->close();
+        }
+    }
+
+    /** Copy one file out of a backup ZIP to a temporary path (for downloading the .sql or .xlsx on its own). */
+    public function extract(string $zipPath, string $ext): ?array
+    {
+        $entry = $this->entry($zipPath, $ext);
+        if (! $entry) {
+            return null;
+        }
+        $tmp = tempnam(sys_get_temp_dir(), 'bk');
+        $in = fopen('zip://'.$zipPath.'#'.$entry, 'rb');
+        $out = fopen($tmp, 'wb');
+        stream_copy_to_stream($in, $out);
+        fclose($in);
+        fclose($out);
+
+        return [$tmp, $entry];
     }
 
     public function path(string $name): ?string

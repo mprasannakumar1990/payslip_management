@@ -107,6 +107,13 @@ class YearlyLeaveAndYearFilterTest extends TestCase
         $this->actingAs($this->admin)->get(route('leave-requests.index'))->assertSee('old-year-leave')->assertDontSee('new-year-leave');
         $this->actingAs($this->admin)->get(route('leave-requests.index', ['year' => 2027]))->assertSee('new-year-leave')->assertDontSee('old-year-leave');
         $this->assertSame(2027, active_year()); // a page opened with ?year= switches the whole app
+
+        // older links use month=YYYY-MM; odd values must never crash the page
+        $this->actingAs($this->admin)->get(route('leave-requests.index', ['month' => '2026-06']))->assertOk()->assertSee('old-year-leave')->assertDontSee('new-year-leave');
+        $this->assertSame(2026, active_year());
+        foreach (['13', '0', 'abc', '2026-99', '-5'] as $bad) {
+            $this->actingAs($this->admin)->get(route('leave-requests.index', ['month' => $bad]))->assertOk();
+        }
     }
 
     public function test_records_are_saved_in_ist_and_header_shows_the_live_clock(): void

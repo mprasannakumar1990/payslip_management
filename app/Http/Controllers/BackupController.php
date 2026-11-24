@@ -43,10 +43,20 @@ class BackupController extends Controller
         return $request->boolean('download') ? $res->with('backup_download', route('backups.download', $name)) : $res;
     }
 
-    public function download(string $name)
+    /** ?format=sql or ?format=xlsx downloads just that file from the ZIP; otherwise the whole ZIP. */
+    public function download(Request $request, string $name)
     {
         $path = $this->backup->path($name);
         abort_unless($path, 404);
+        $format = $request->query('format');
+        if (in_array($format, ['sql', 'xlsx'], true)) {
+            $part = $this->backup->extract($path, $format);
+            abort_unless($part, 404, 'This backup has no '.strtoupper($format).' file.');
+            ActivityLog::record('backup', "Downloaded $format from backup $name");
+
+            return response()->download($part[0], $part[1], ['Content-Type' => $format === 'xlsx'
+                ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/sql'])->deleteFileAfterSend(true);
+        }
         ActivityLog::record('backup', "Downloaded backup $name");
 
         return response()->download($path, $name, ['Content-Type' => str_ends_with($name, '.zip') ? 'application/zip' : 'application/gzip']);

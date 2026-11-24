@@ -127,6 +127,14 @@ class XlsxBuilder
         $ws->getStyle('A3:A'.(count($lines) + 3))->getAlignment()->setWrapText(true);
     }
 
+    /** Write the workbook to a file (used for the Excel copy inside database backups). */
+    public function save(string $path): void
+    {
+        $this->book->setActiveSheetIndex(0);
+        (new Xlsx($this->book))->save($path);
+        $this->book->disconnectWorksheets();
+    }
+
     public function download(string $filename): BinaryFileResponse
     {
         $this->book->setActiveSheetIndex(0);

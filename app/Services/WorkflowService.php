@@ -68,7 +68,7 @@ class WorkflowService
                 'detail' => "$approvedLeave approved leave requests, $monthlyEntries monthly entries"
                     .($pendingLeave ? " · $pendingLeave PENDING approval (not counted in payroll)" : '')
                     .(($approvedLeave + $monthlyEntries) ? '' : ' · nothing recorded yet (fine if nobody took leave)'),
-                'links' => [['Leave requests', route('leave-requests.index', ['month' => $start->format('Y-m'), 'status' => $pendingLeave ? 'pending' : null])],
+                'links' => [['Leave requests', route('leave-requests.index', ['year' => $year, 'month' => $month, 'status' => $pendingLeave ? 'pending' : null])],
                     ['Monthly leave entry', route('leave.adjustments', ['year' => $year, 'month' => $month])], ['Import register', route('imports.index')]],
             ],
             [
