@@ -102,6 +102,7 @@
                     <li><strong>Digital clock</strong>: the current India Standard Time (IST). Every record is saved with IST date and time.</li>
                     <li><strong>Year</strong>: chooses the year shown on <em>every</em> page (lists, counts, totals, dashboard). A past year is shown in orange so you notice it. Choosing a year inside a page's own filter switches the whole app too.</li>
                     <li><i class="bi bi-palette2"></i> <strong>Colour theme</strong>: 5 colour sets (Purple &amp; Orange, Royal Purple, Sunset Orange, Ocean Blue, Emerald Green). Remembered on this computer.</li>
+                    <li><i class="bi bi-layout-sidebar-inset"></i> <strong>Side menu toggle</strong> (left of the page title): shrinks the menu to icons to give pages more room; point at it to open it. Remembered on this computer.</li>
                     @if ($isSuper)<li><i class="bi bi-database-down"></i> <strong>Backup</strong>: takes a full database backup and downloads the ZIP.</li>@endif
                 </ul>
 
@@ -253,23 +254,23 @@
                     <tr><td>Basic earned</td><td>Per day × present days (working days − LOP days)</td></tr>
                     <tr><td>Shift pay</td><td>2nd / 3rd shift hours × shift rate</td></tr>
                     <tr><td>OT pay</td><td>Per day ÷ {{ num_clean(setting('ot_hours_per_day')) }} × multiplier × OT hours (or a manual amount)</td></tr>
-                    <tr><td>Gross</td><td>Basic earned + shift + OT + special OT + manager special + factory special</td></tr>
+                    <tr><td>Gross</td><td>Basic earned + shift + OT + special OT + manager special + factory special + other allowance + general allowances</td></tr>
                     <tr><td>ESI</td><td>Gross × {{ num_clean(setting('esi_percent')) }}% (if applicable)</td></tr>
                     <tr><td>PF</td><td>{{ num_clean(setting('pf_percent')) }}% of basic earned, max ₹{{ inr(setting('pf_cap'), 0) }} (if applicable)</td></tr>
-                    <tr><td>Net</td><td>Gross − (ESI + PF + tax + advance + other deductions)</td></tr>
+                    <tr><td>Net</td><td>Gross − (ESI + PF + tax + food coupon + advance + other deductions)</td></tr>
                     <tr><td>Attendance bonus</td><td>One day's pay when the employee had no absence</td></tr>
                     <tr><td>Total payable</td><td>Net + allowances + attendance bonus + birthday welfare (rounded to the rupee)</td></tr>
                 </table>
                 <h6>Actions</h6>
                 <ul class="mb-2">
-                    <li><strong>Edit a payslip</strong> (draft only): advance, other deduction, special OT amount, birthday welfare, OT override, remarks. These stay when you recalculate.</li>
+                    <li><strong>Edit a payslip</strong> (draft only): food coupon, advance, other deduction, special OT amount, birthday welfare, OT override, remarks. These stay when you recalculate.</li>
                     <li><strong>Export</strong> the salary register to Excel; download all payslips as one PDF or a single payslip.</li>
                     <li><strong>Finalize</strong> locks the month. @if ($isSuper)As Super Admin you can <strong>Re-open</strong> or <strong>Delete</strong> a run if a correction is needed.@else Only a Super Admin can re-open it.@endif</li>
                     <li><strong>Email</strong> sends each payslip PDF to the employee's email (set up SMTP in Settings → Email first).</li>
                 </ul>
-                <h6>Only filled columns and lines</h6>
+                <h6>Register columns and payslip lines</h6>
                 <ul class="mb-2">
-                    <li>The <strong>salary register</strong> hides columns that are empty for the whole month (e.g. no 3rd shift, no tax, no advance) and shows them automatically as soon as one employee has a value. Click <em>show all columns</em> to see every column. Filled cells are coloured: <span class="reg-key f-add">Addition</span> <span class="reg-key f-red">Reduction</span> <span class="reg-key f-allow">Allowance</span>.</li>
+                    <li>The <strong>salary register</strong> shows every column of the salary sheet (Information, Basic, Addition, Gross, Reduction, Net, Allowance, Total). Click <span class="kbd-chip"><i class="bi bi-layout-three-columns"></i> Columns</span> to tick the columns you want to see, a whole group at once, <em>All</em>, <em>Only filled</em> (hides columns that are empty this month) or <em>Default</em> (the columns chosen by the Super Admin in Settings → Salary sheet columns). Your choice is remembered on this computer. The <strong>Information and Basic</strong> columns stay fixed on the left while you scroll sideways (switch it off in the same menu). Filled cells are coloured: <span class="reg-key f-add">Addition</span> <span class="reg-key f-red">Reduction</span> <span class="reg-key f-allow">Allowance</span>.</li>
                     <li>Each <strong>payslip</strong> (screen, PDF and email) lists only the earnings, deductions and allowances that apply to that employee that month.</li>
                 </ul>
                 <p class="small text-muted mb-0">The payroll list shows one year at a time with totals for gross, net and payable. The Excel export keeps every column, in the layout of the original salary sheet.</p>
@@ -299,7 +300,17 @@
                     <li>A <strong>preview</strong> checks every row: unknown Emp IDs, wrong numbers, too many hours, locked months. If the workbook has several sheets you can switch sheet. Rows are colour-coded: <span class="badge bg-success">green edge = ready</span> <span class="badge bg-warning">amber = check</span> <span class="badge bg-danger">red = error</span>, and every filled value is tinted green. Use the chips <em>All / Ready / Check / Errors</em> above the table to show one kind of row.</li>
                     <li>Fix or skip problem rows, then confirm. Nothing is saved before this step.</li>
                 </ol>
-                <div class="tip mb-0">Employees are matched by Emp ID, then by name. Importing again for the same month/year replaces the earlier import.</div>
+                <div class="tip mb-3">Employees are matched by Emp ID, then by name. Importing again for the same month/year replaces the earlier import.</div>
+
+                <h6>Monthly salary sheet (“Salary Workings &lt;Month Year&gt;”)</h6>
+                <p class="mb-2">The salary workbook the office prepares every month can be uploaded as it is (layout from October 2026). Choose the month, drop the file on the pink box and verify. The preview shows, for every employee, the sheet's gross, deductions, net and total, and what changes in the employee record (old → new). Then tick what to import:</p>
+                <ul class="mb-2">
+                    <li><strong>Update employee salary details</strong>: basic, manager / factory special, other allowance, general allowances, tax, PF / ESI, every allowance column, designation, grade and EPF / ESIC numbers. These are used for the next payroll.</li>
+                    <li><strong>Register new employees</strong> that are in the sheet but not in the system.</li>
+                    <li><strong>Save the month's payslips exactly as in the sheet</strong> as a draft payroll: review it, then finalize and email as usual.</li>
+                </ul>
+                <p class="mb-2">Columns are found by their headings, so the same layout keeps working every month, and a new column such as <em>Increment 2027</em> is added automatically as a new allowance. The salary register on screen and its Excel export use the same columns (Emp ID NO, Basic, hr (day/8hr), Present, Absent, Total, 2nd, 3rd, Spl Ot, OT, OT Pays, Manager Special, Factory Special, Other Allowance, General Allowances, Gross Salary, ESI, PF, TAX, Food Coupon, Net Salary, Spl Allowance, Food, Transport, Food Welfare, Attendance Bonus, Mobile, Old Increment, Increment 2026, Birthday Welfare, Total Amount), so an export can also be uploaded again.</p>
+                <div class="warn mb-0">Checks done for you: a “0” EPF / ESIC number in the sheet never wipes a saved number; an impossible joining date (e.g. a year 2111 typo) is ignored; the sheet's own gross / net / total arithmetic is checked; <strong>Food</strong> reduced for absent days is not taken as the new monthly amount (the higher of the saved and sheet value is kept — check these rows); active employees missing from the sheet are listed so you can enter their exit date.</div>
             </div>
         </div>
 
@@ -309,7 +320,7 @@
             <div class="card-body">
                 <ul class="mb-0">
                     <li><strong>Database Backups:</strong> a full backup (all tables and all data) is taken daily (Windows scheduled task, plus an automatic backup if a day was missed). A reminder pops up at the set time to take and download one yourself. Backups are ZIP files with a README explaining how to restore.</li>
-                    <li><strong>Settings:</strong> company details, working days, payroll deadline day, rates (shift, OT, ESI, PF, gratuity), leave types and quotas, allowance types, weekly off and email (SMTP).</li>
+                    <li><strong>Settings:</strong> salary sheet columns (which register columns are shown by default; allowance columns in sheet order), company details, working days, payroll deadline day, rates (shift, OT, ESI, PF, gratuity), leave types and quotas, allowance types, weekly off and email (SMTP).</li>
                     <li><strong>Admin Accounts:</strong> add admins, reset passwords, enable or disable accounts.</li>
                     <li><strong>Activity Log:</strong> who did what and when (IST), filterable by year, month, user and module.</li>
                 </ul>

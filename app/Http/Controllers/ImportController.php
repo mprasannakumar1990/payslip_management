@@ -415,6 +415,86 @@ class ImportController extends Controller
     }
 
     // ================================================================ Employees
+    // ---------------------------------------------------------------- monthly salary sheet
+    public function salaryUpload(Request $request)
+    {
+        $request->validate(['period' => ['required', 'date_format:Y-m']]);
+        $token = $this->storeUpload($request);
+
+        return redirect()->route('imports.salary.preview', ['token' => $token, 'period' => $request->period]);
+    }
+
+    public function salaryPreview(Request $request, \App\Services\SalarySheetImporter $importer)
+    {
+        $request->validate(['period' => ['required', 'date_format:Y-m'], 'token' => ['required', 'string']]);
+        [$year, $month] = array_map('intval', explode('-', $request->period));
+        $book = $this->openStored($request->token);
+        $sheet = $request->sheet && in_array($request->sheet, $book->getSheetNames(), true) ? $request->sheet : $this->import->guessSheet($book, $year, $month);
+        $fatal = null;
+        $result = ['rows' => [], 'missing' => collect(), 'run' => null];
+        $parsed = ['columns' => [], 'allowances' => []];
+        try {
+            $parsed = $this->import->parseSalarySheet($book, $sheet);
+            $result = $importer->analyse($parsed, $year, $month);
+            if (! $result['rows']) {
+                $fatal = 'No employee rows were found under the header row.';
+            }
+        } catch (\RuntimeException $e) {
+            $fatal = $e->getMessage();
+        }
+        $label = Carbon::create($year, $month)->format('F Y');
+        if (! $fatal && ! preg_match('/'.preg_quote(Carbon::create($year, $month)->format('M'), '/').'[a-z]*\W*'.$year.'/i', $sheet)) {
+            session()->now('warning', "The sheet “{$sheet}” does not look like $label. Check that you picked the right month and sheet.");
+        }
+
+        return view('imports.salary-preview', [
+            'token' => $request->token, 'year' => $year, 'month' => $month, 'label' => $label,
+            'sheets' => $book->getSheetNames(), 'sheet' => $sheet, 'fatal' => $fatal,
+            'rows' => $result['rows'], 'missing' => $result['missing'], 'run' => $result['run'],
+            'columns' => $parsed['columns'], 'allowanceCols' => $parsed['allowances'],
+            'summary' => [ // new employees are importable here (they are registered from the sheet)
+                'total' => count($result['rows']),
+                'ok' => collect($result['rows'])->filter(fn ($r) => ! $r['errors'] && ! $r['warnings'])->count(),
+                'warnings' => collect($result['rows'])->filter(fn ($r) => ! $r['errors'] && $r['warnings'])->count(),
+                'errors' => collect($result['rows'])->filter(fn ($r) => (bool) $r['errors'])->count(),
+                'importable' => collect($result['rows'])->filter(fn ($r) => ! $r['errors'])->count(),
+            ],
+            'payload' => $fatal ? '' : Crypt::encryptString(json_encode($result['rows'])),
+        ]);
+    }
+
+    public function salaryStore(Request $request, \App\Services\SalarySheetImporter $importer)
+    {
+        $data = $request->validate([
+            'period' => ['required', 'date_format:Y-m'], 'payload' => ['required', 'string'], 'verified' => ['accepted'],
+            'update_master' => ['nullable', 'boolean'], 'create_new' => ['nullable', 'boolean'], 'save_payroll' => ['nullable', 'boolean'],
+        ], ['verified.accepted' => 'Please tick "I have verified the preview" before importing.']);
+        [$year, $month] = array_map('intval', explode('-', $data['period']));
+        $opts = ['update_master' => $request->boolean('update_master'), 'create_new' => $request->boolean('create_new'), 'save_payroll' => $request->boolean('save_payroll')];
+        if (! array_filter($opts)) {
+            return back()->with('warning', 'Choose at least one thing to import.');
+        }
+        $rows = json_decode(Crypt::decryptString($data['payload']), true) ?: [];
+        try {
+            $s = $importer->apply($rows, $year, $month, $opts);
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+        $label = Carbon::create($year, $month)->format('F Y');
+        $parts = array_filter([
+            $s['updated'] ? "{$s['updated']} employees updated" : null,
+            $s['created'] ? "{$s['created']} new employees" : null,
+            $s['types'] ? "{$s['types']} new allowance column(s)" : null,
+            $s['payslips'] ? "{$s['payslips']} payslips saved for $label (draft)" : null,
+        ]);
+        ActivityLog::record('import', "Imported salary sheet $label: ".($parts ? implode(', ', $parts) : 'nothing changed'));
+        $msg = "Salary sheet $label imported: ".($parts ? implode(', ', $parts) : 'nothing changed').'.';
+
+        return $s['payslips'] && $s['run']
+            ? redirect()->route('payroll.show', $s['run'])->with('success', $msg.' Review the payslips, then finalize.')
+            : redirect()->route('employees.index')->with('success', $msg);
+    }
+
     public function employeesUpload(Request $request)
     {
         $token = $this->storeUpload($request);
@@ -517,7 +597,7 @@ class ImportController extends Controller
                     continue;
                 }
                 $fields = collect($r)->only(['name', 'designation', 'grade', 'ot_group', 'uan_no', 'esic_no', 'status', 'email', 'phone',
-                    'bank_account_no', 'bank_ifsc', 'pan_no', 'basic_salary', 'manager_special', 'factory_special', 'monthly_tax',
+                    'bank_account_no', 'bank_ifsc', 'pan_no', 'basic_salary', 'manager_special', 'factory_special', 'other_allowance', 'general_allowance', 'monthly_tax',
                     'pf_applicable', 'esi_applicable', 'date_of_joining', 'date_of_exit'])
                     ->reject(fn ($v) => $v === null || $v === '')
                     ->all();

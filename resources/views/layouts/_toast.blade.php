@@ -192,6 +192,17 @@
         tick();
     }
 
+    // side menu: collapse to icons / expand (desktop), remembered in this browser
+    const sbIcon = () => { const i = document.querySelector('#sidebarToggle i'); if (i) i.className = 'bi ' + (document.documentElement.classList.contains('sb-mini') ? 'bi-layout-sidebar' : 'bi-layout-sidebar-inset'); };
+    sbIcon();
+    document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+        const mini = document.documentElement.classList.toggle('sb-mini');
+        sbIcon();
+        try { localStorage.setItem('sb-mini', mini ? '1' : '0'); } catch (e) {}
+        notify({type: 'info', title: mini ? 'Menu collapsed' : 'Menu expanded', message: mini ? 'Point at the menu to open it, or click the button again.' : '', duration: 2200});
+        setTimeout(() => dispatchEvent(new Event('resize')), 280); // frozen register columns re-measure
+    });
+
     // colour themes (top bar palette)
     const markTheme = () => {
         const cur = document.documentElement.getAttribute('data-theme');

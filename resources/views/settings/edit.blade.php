@@ -80,12 +80,14 @@
     <div class="my-3"><button class="btn btn-primary"><i class="bi bi-save"></i> Save settings</button></div>
 </form>
 
+@include('settings._sheet-columns')
+
 <div class="row g-3">
     <div class="col-lg-6">
         <div class="card">
-            <div class="card-header">Allowance types</div>
+            <div class="card-header">Allowance columns <span class="small text-muted fw-normal">(in salary-sheet order)</span></div>
             <div class="card-body">
-                <p class="small text-muted">Fixed monthly allowances paid on top of net salary (Food, Transport, increments …). Amounts are set per employee.</p>
+                <p class="small text-muted">Fixed monthly allowances paid on top of net salary, in the order of the salary sheet: Spl Allowance, Food, Transport, Food Welfare, (Attendance Bonus), Mobile, Old Increment, Increment 2026, (Birthday Welfare). Amounts are set per employee. Untick <em>Active</em> to retire a column — old payslips keep it.</p>
                 <table class="table table-sm align-middle">
                     <thead><tr><th>Name</th><th style="width:80px">Order</th><th style="width:70px">Active</th><th></th></tr></thead>
                     @foreach ($allowanceTypes as $t)

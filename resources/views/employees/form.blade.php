@@ -84,6 +84,8 @@
                     <div class="col-12"><label class="form-label">Basic salary *</label><input type="number" step="0.01" name="basic_salary" class="form-control" value="{{ $v('basic_salary', 0) }}" required><div class="form-text">Per day = Basic ÷ {{ num_clean(setting('working_days')) }}</div></div>
                     <div class="col-6"><label class="form-label">Manager special</label><input type="number" step="0.01" name="manager_special" class="form-control" value="{{ $v('manager_special', 0) }}"></div>
                     <div class="col-6"><label class="form-label">Factory special</label><input type="number" step="0.01" name="factory_special" class="form-control" value="{{ $v('factory_special', 0) }}"></div>
+                    <div class="col-6"><label class="form-label">Other allowance <small class="text-muted">(in gross)</small></label><input type="number" step="0.01" min="0" name="other_allowance" class="form-control" value="{{ $v('other_allowance', 0) }}"></div>
+                    <div class="col-6"><label class="form-label">General allowances <small class="text-muted">(in gross)</small></label><input type="number" step="0.01" min="0" name="general_allowance" class="form-control" value="{{ $v('general_allowance', 0) }}"></div>
                     <div class="col-6"><label class="form-label">Monthly TAX (TDS)</label><input type="number" step="0.01" name="monthly_tax" class="form-control" value="{{ $v('monthly_tax', 0) }}"></div>
                     <div class="col-6"><label class="form-label">OT multiplier</label><input type="number" step="0.01" name="ot_multiplier" class="form-control" value="{{ $v('ot_multiplier', 1.5) }}" required></div>
                     <div class="col-12">

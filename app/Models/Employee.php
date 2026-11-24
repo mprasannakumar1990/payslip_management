@@ -24,6 +24,8 @@ class Employee extends Model
             'basic_salary' => 'float',
             'manager_special' => 'float',
             'factory_special' => 'float',
+            'other_allowance' => 'float',
+            'general_allowance' => 'float',
             'monthly_tax' => 'float',
             'ot_multiplier' => 'float',
         ];

@@ -5,16 +5,25 @@
         'BASIC SALARY' => $p->basic_earned,
         'MANAGER SPL' => $p->manager_special,
         'FACTORY SPL' => $p->factory_special,
+        'OTHER ALLOWANCE' => $p->other_allowance,
+        'GENERAL ALLOWANCES' => $p->general_allowance,
         'OT PAYS ('.num_clean($p->ot_hours).' hrs)' => $p->ot_amount,
         '2ND SHIFT ('.num_clean($p->second_shift_hours).' hrs)' => $p->second_shift_amount,
         '3RD SHIFT ('.num_clean($p->third_shift_hours).' hrs)' => $p->third_shift_amount,
         'SPL OT' => $p->spl_ot_amount,
     ], fn ($v, $k) => $v != 0 || $k === 'BASIC SALARY', ARRAY_FILTER_USE_BOTH);
     $deductions = array_filter([
-        'EPF' => $p->pf, 'ESIC' => $p->esi, 'TAX' => $p->tax, 'ADVANCE' => $p->advance, 'MISC' => $p->other_deduction,
+        'EPF' => $p->pf, 'ESIC' => $p->esi, 'TAX' => $p->tax, 'FOOD COUPON' => $p->food_coupon, 'ADVANCE' => $p->advance, 'MISC' => $p->other_deduction,
     ], fn ($v) => $v != 0); // only deductions that apply to this employee
     $allowances = collect($p->allowances ?? [])->filter(fn ($a) => (float) ($a['amount'] ?? 0) != 0)->pluck('amount', 'name')->all();
-    if ($p->attendance_bonus) { $allowances['Attendance'] = $p->attendance_bonus; }
+    // salary-sheet order: Attendance bonus after Food Welfare, the rest in layout order
+    $order = array_flip(\App\Support\SalaryLayout::ALLOWANCES);
+    uksort($allowances, fn ($a, $b) => ($order[$a] ?? 50) <=> ($order[$b] ?? 50));
+    if ($p->attendance_bonus) {
+        $pos = array_search('Food Welfare', array_keys($allowances), true);
+        $pos = $pos === false ? count(array_filter(array_keys($allowances), fn ($k) => ($order[$k] ?? 50) <= $order['Food Welfare'])) : $pos + 1;
+        $allowances = array_slice($allowances, 0, $pos, true) + ['Attendance' => $p->attendance_bonus] + array_slice($allowances, $pos, null, true);
+    }
     if ($p->birthday_welfare) { $allowances['Birthday Welfare'] = $p->birthday_welfare; }
     $rows = max(count($earnings), count($deductions));
     $lv = $p->leave_summary ?? null;

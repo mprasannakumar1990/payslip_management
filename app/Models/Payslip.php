@@ -10,8 +10,8 @@ class Payslip extends Model
 
     public const MONEY = ['basic_salary', 'per_day', 'working_days', 'present_days', 'absent_days', 'lop_days', 'basic_earned',
         'second_shift_hours', 'second_shift_amount', 'third_shift_hours', 'third_shift_amount', 'spl_ot_amount', 'ot_hours',
-        'ot_multiplier', 'ot_amount', 'manager_special', 'factory_special', 'total_addition', 'gross_salary', 'esi', 'pf', 'tax',
-        'advance', 'other_deduction', 'total_deduction', 'net_salary', 'attendance_bonus', 'birthday_welfare', 'total_allowance',
+        'ot_multiplier', 'ot_amount', 'manager_special', 'factory_special', 'other_allowance', 'general_allowance', 'total_addition', 'gross_salary', 'esi', 'pf', 'tax',
+        'advance', 'food_coupon', 'other_deduction', 'total_deduction', 'net_salary', 'attendance_bonus', 'birthday_welfare', 'total_allowance',
         'total_amount'];
 
     protected function casts(): array

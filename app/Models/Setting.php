@@ -19,7 +19,7 @@ class Setting extends Model
         'ot_multiplier' => '1.5',
         'ot_hours_per_day' => '8',
         'pf_percent' => '12',
-        'pf_cap' => '1800',
+        'pf_cap' => '3000', // Oct 2026 sheet: 12% of basic, up to Rs 3,000 (was 1,800 in 2025)
         'esi_percent' => '0.75',
         'annual_leave_pool' => '28',
         'el_max_per_year' => '16',

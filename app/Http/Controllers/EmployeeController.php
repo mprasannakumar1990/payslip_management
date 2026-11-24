@@ -59,10 +59,10 @@ class EmployeeController extends Controller
 
     public function export(Request $request)
     {
-        $types = AllowanceType::ordered()->get();
+        $types = AllowanceType::ordered()->where('is_active', true)->get();
         $rows = $this->filtered($request)->with('allowances')->get()->map(function (Employee $e) use ($types) {
             $row = [$e->emp_code, $e->name, $e->designation, $e->grade, $e->ot_group, $e->date_of_joining?->format('d-m-Y'),
-                $e->uan_no, $e->esic_no, $e->email, $e->phone, $e->basic_salary, $e->manager_special, $e->factory_special, $e->monthly_tax,
+                $e->uan_no, $e->esic_no, $e->email, $e->phone, $e->basic_salary, $e->manager_special, $e->factory_special, $e->other_allowance, $e->general_allowance, $e->monthly_tax,
                 $e->pf_applicable ? 'Yes' : 'No', $e->esi_applicable ? 'Yes' : 'No', $e->status];
             foreach ($types as $t) {
                 $row[] = (float) optional($e->allowances->firstWhere('allowance_type_id', $t->id))->amount;
@@ -71,7 +71,7 @@ class EmployeeController extends Controller
             return $row;
         });
         $header = array_merge(['Emp ID', 'Name', 'Designation', 'Grade', 'Plant / Group', 'Joining Date', 'EPF / UAN', 'ESIC No',
-            'Email', 'Phone', 'Basic', 'Manager Special', 'Factory Special', 'Monthly Tax', 'PF', 'ESI', 'Status'], $types->pluck('name')->all());
+            'Email', 'Phone', 'Basic', 'Manager Special', 'Factory Special', 'Other Allowance', 'General Allowances', 'Monthly Tax', 'PF', 'ESI', 'Status'], $types->pluck('name')->all());
 
         $basicCol = array_search('Basic', $header, true);
 
@@ -229,6 +229,8 @@ class EmployeeController extends Controller
             'basic_salary' => ['required', 'numeric', 'min:0', 'max:99999999'],
             'manager_special' => $money,
             'factory_special' => $money,
+            'other_allowance' => $money,
+            'general_allowance' => $money,
             'monthly_tax' => $money,
             'ot_multiplier' => ['required', 'numeric', 'min:0', 'max:5'],
             'status' => ['required', Rule::in(['active', 'inactive', 'exited'])],
@@ -246,7 +248,7 @@ class EmployeeController extends Controller
         if (array_key_exists('photo_path', $data) && $employee?->photo_path && $employee->photo_path !== $data['photo_path']) {
             \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->photo_path);
         }
-        foreach (['manager_special', 'factory_special', 'monthly_tax'] as $f) {
+        foreach (['manager_special', 'factory_special', 'other_allowance', 'general_allowance', 'monthly_tax'] as $f) {
             $data[$f] = (float) ($data[$f] ?? 0);
         }
         foreach (['pf_applicable', 'esi_applicable', 'ot_eligible', 'attendance_bonus_applicable'] as $f) {

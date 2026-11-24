@@ -39,5 +39,7 @@ class DatabaseSeeder extends Seeder
 
         // Employees, OT and leave history imported from the Excel workbooks in docs/sheets.
         $this->call(ExcelDataSeeder::class);
+        // current salary-sheet layout (Oct 2026): Food Welfare, Old Increment, Increment 2026
+        \App\Support\SalaryLayout::applyAllowanceTypes();
     }
 }

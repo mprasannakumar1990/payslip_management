@@ -84,9 +84,18 @@ class PhotosCelebrationsAndRegisterTest extends TestCase
         app(PayrollService::class)->generate($run);
         $run->payslips()->update(['third_shift_amount' => 0, 'tax' => 0, 'advance' => 0]);
 
+        // every column is rendered; the column picker marks empty ones and can hide them; Information & Basic are frozen
         $this->actingAs($this->admin)->get(route('payroll.show', $run))->assertOk()
-            ->assertDontSee('>3rd shift<', false)->assertSee('empty column(s) hidden');
-        $this->actingAs($this->admin)->get(route('payroll.show', [$run, 'all' => 1]))->assertOk()->assertSee('>3rd shift<', false);
+            ->assertSee('data-c="third_shift_amount"', false)->assertSee('id="regFreeze"', false)
+            ->assertSee('data-col-toggle="third_shift_amount"', false)->assertSee('· empty', false)
+            ->assertSee('class="text-center g-info fz"', false);
+
+        // Settings decides which columns are shown by default
+        $this->actingAs($this->admin)->get(route('settings.edit'))->assertOk()->assertSee('Salary sheet columns')->assertSee('Food Coupon');
+        $all = array_column(\App\Support\SalaryLayout::registerColumns(), 0);
+        $this->actingAs($this->admin)->put(route('settings.register-columns'), ['visible' => array_diff($all, ['grade', 'food_coupon'])])->assertRedirect();
+        $this->assertEqualsCanonicalizing(['grade', 'food_coupon'], \App\Support\SalaryLayout::hiddenByDefault());
+        $this->actingAs($this->admin)->get(route('payroll.show', $run))->assertSee('data-default-hidden=\'["grade","food_coupon"]\'', false);
 
         $slip = $run->payslips()->first();
         $this->actingAs($this->admin)->get(route('payslips.show', $slip))->assertOk()->assertDontSee('ADVANCE');

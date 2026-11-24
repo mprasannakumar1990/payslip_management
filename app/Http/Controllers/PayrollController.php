@@ -106,45 +106,16 @@ class PayrollController extends Controller
     }
 
     /** Salary register in the column layout of the "Salary Workings" sheet. */
+    /** Salary register in the layout of the monthly salary sheet (see App\Support\SalaryRegisterExport). */
     public function export(PayrollRun $run)
     {
-        $types = AllowanceType::ordered()->pluck('name')->all();
-        $slips = $run->payslips()->orderBy('emp_code')->get();
-        foreach ($slips as $s) {
-            foreach ($s->allowances ?? [] as $a) {
-                if (! in_array($a['name'], $types, true)) {
-                    $types[] = $a['name'];
-                }
-            }
-        }
-        $header = array_merge(['Emp ID', 'Name', 'Designation', 'Grade', 'EPF No', 'ESIC No', 'Joining Date', 'Basic', 'Per Day',
-            'Present', 'Absent', 'LOP', 'Total Working', 'Basic Earned', '2nd Shift', '3rd Shift', 'Spl OT', 'OT Hrs', 'OT Pays',
-            'Manager Special', 'Factory Special', 'Total Addition', 'Gross Salary', 'ESI', 'PF', 'TAX', 'Advance', 'Other Ded.',
-            'Total Reduction', 'Net Salary'], $types, ['Attendance Bonus', 'Birthday Welfare', 'Total Allowance', 'Total Amount', 'Remarks']);
-        $rows = $slips->map(function ($s) use ($types) {
-            $al = collect($s->allowances ?? [])->pluck('amount', 'name');
-
-            return array_merge([$s->emp_code, $s->name, $s->designation, $s->grade, $s->uan_no, $s->esic_no,
-                $s->date_of_joining?->format('d-m-Y'), $s->basic_salary, round($s->per_day, 2), $s->present_days, $s->absent_days,
-                $s->lop_days, $s->working_days, $s->basic_earned, $s->second_shift_amount, $s->third_shift_amount, $s->spl_ot_amount,
-                $s->ot_hours, $s->ot_amount, $s->manager_special, $s->factory_special, $s->total_addition, $s->gross_salary, $s->esi,
-                $s->pf, $s->tax, $s->advance, $s->other_deduction, $s->total_deduction, $s->net_salary],
-                array_map(fn ($t) => $al[$t] ?? 0, $types),
-                [$s->attendance_bonus, $s->birthday_welfare, $s->total_allowance, $s->total_amount, $s->remarks]);
-        });
-        $t = fn ($f) => round($slips->sum($f), 2);
-        $rows->push(array_merge(['', 'TOTAL', '', '', '', '', '', $t('basic_salary'), '', '', '', '', '', $t('basic_earned'),
-            $t('second_shift_amount'), $t('third_shift_amount'), $t('spl_ot_amount'), $t('ot_hours'), $t('ot_amount'),
-            $t('manager_special'), $t('factory_special'), $t('total_addition'), $t('gross_salary'), $t('esi'), $t('pf'), $t('tax'),
-            $t('advance'), $t('other_deduction'), $t('total_deduction'), $t('net_salary')],
-            array_map(fn ($ty) => round($slips->sum(fn ($s) => collect($s->allowances ?? [])->firstWhere('name', $ty)['amount'] ?? 0), 2), $types),
-            [$t('attendance_bonus'), $t('birthday_welfare'), $t('total_allowance'), $t('total_amount'), '']));
+        [$header, $rows] = \App\Support\SalaryRegisterExport::build($run);
 
         return xlsx_download('salary-register-'.$run->year.'-'.str_pad($run->month, 2, '0', STR_PAD_LEFT).'.xlsx', $header, $rows,
-            ['title' => $run->periodLabel(), 'highlight' => ['/^TOTAL$/' => 'E0E7FF'], 'number_format' => array_fill_keys(range(7, count($header) - 2), '#,##0.00')]);
+            ['title' => $run->periodLabel(), 'highlight' => ['/^TOTAL$/' => 'E0E7FF'],
+                'number_format' => array_fill_keys(range(7, count($header) - 2), '#,##0.00')]);
     }
 
-    /** Email payslips of the month to every employee (only those not yet sent, unless "resend" is ticked). */
     public function email(Request $request, PayrollRun $run, \App\Services\PayslipMailer $mailer)
     {
         abort_unless($run->isFinalized(), 422, 'Finalize the payroll before emailing payslips.');

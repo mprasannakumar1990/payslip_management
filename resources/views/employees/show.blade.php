@@ -50,6 +50,8 @@
                 <tr><td>Per day (÷{{ num_clean(setting('working_days')) }})</td><td class="num">{{ inr($employee->perDay()) }}</td></tr>
                 @if($employee->manager_special)<tr><td>Manager special</td><td class="num">{{ inr($employee->manager_special) }}</td></tr>@endif
                 @if($employee->factory_special)<tr><td>Factory special</td><td class="num">{{ inr($employee->factory_special) }}</td></tr>@endif
+                @if($employee->other_allowance)<tr><td>Other allowance</td><td class="num">{{ inr($employee->other_allowance) }}</td></tr>@endif
+                @if($employee->general_allowance)<tr><td>General allowances</td><td class="num">{{ inr($employee->general_allowance) }}</td></tr>@endif
                 @if($employee->monthly_tax)<tr><td>Monthly TAX</td><td class="num">{{ inr($employee->monthly_tax) }}</td></tr>@endif
                 <tr><td>OT multiplier</td><td class="num">{{ num_clean($employee->ot_multiplier) }}×</td></tr>
                 @foreach ($employee->allowances as $a)

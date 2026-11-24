@@ -21,3 +21,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# client workbooks contain salary and personal data: never commit new ones
+/docs/sheets/*

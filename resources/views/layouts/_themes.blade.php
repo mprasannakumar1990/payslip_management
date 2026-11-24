@@ -160,6 +160,26 @@
     .reg-dyn th.g-gross, .reg-dyn th.g-net, .reg-dyn th.g-total { background: var(--accent-soft) !important; color: var(--accent-ink); }
     .reg-dyn td.filled { font-weight: 600; }
 
+    /* collapsible side menu (desktop): icons only, opens over the page on hover */
+    @media (min-width: 992px) {
+        .sidebar, .main { transition: width .25s cubic-bezier(.2,.8,.2,1), margin-left .25s cubic-bezier(.2,.8,.2,1); }
+        html.sb-mini { --sidebar-w: 76px; }
+        html.sb-mini .sidebar { width: 76px; overflow: hidden; }
+        html.sb-mini .sidebar .brand-text, html.sb-mini .sidebar .nav-label, html.sb-mini .sidebar-foot .who,
+        html.sb-mini .sidebar-foot > a { display: none; }
+        html.sb-mini .sidebar .brand { justify-content: center; padding-left: 0; padding-right: 0; }
+        html.sb-mini .nav-section { font-size: 0; padding: .55rem 0 .25rem; } html.sb-mini .nav-section::after { content: ''; display: block; height: 1px; margin: 0 14px; background: rgba(255,255,255,.18); }
+        html.sb-mini .nav-item { justify-content: center; padding: .5rem 0; }
+        html.sb-mini .sidebar-foot { justify-content: center; padding-left: 0; padding-right: 0; }
+        html.sb-mini .sidebar:hover { width: 272px; box-shadow: 8px 0 30px rgba(0,0,0,.25); }
+        html.sb-mini .sidebar:hover .brand-text, html.sb-mini .sidebar:hover .nav-label, html.sb-mini .sidebar:hover .sidebar-foot .who { display: block; }
+        html.sb-mini .sidebar:hover .sidebar-foot > a { display: inline; }
+        html.sb-mini .sidebar:hover .nav-item { justify-content: flex-start; padding: .48rem .6rem; }
+        html.sb-mini .sidebar:hover .brand { justify-content: flex-start; padding: 1.05rem 1.1rem; }
+        html.sb-mini .sidebar:hover .nav-section { font-size: .65rem; padding: 1.1rem .7rem .4rem; } html.sb-mini .sidebar:hover .nav-section::after { display: none; }
+        html.sb-mini .sidebar:hover .sidebar-foot { justify-content: flex-start; padding: .85rem 1.1rem; }
+    }
+
     /* theme picker */
     .theme-pick .dropdown-menu { min-width: 230px; }
     .theme-pick .swatch { width: 26px; height: 26px; border-radius: 8px; flex: 0 0 26px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.4); }

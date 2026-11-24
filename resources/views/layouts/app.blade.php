@@ -13,6 +13,7 @@
     @include('layouts._theme')
     @include('layouts._redesign')
     @include('layouts._themes')
+    <script>try { if (localStorage.getItem('sb-mini') === '1') document.documentElement.classList.add('sb-mini'); } catch (e) {}</script>
     @stack('styles')
 </head>
 <body>
@@ -90,7 +91,7 @@ foreach ($nav as [, $items]) {
         @foreach ($nav as [$section, $items])
             <div class="nav-section">{{ $section }}</div>
             @foreach ($items as [$route, $label, $icon, $color, $active])
-                <a class="nav-item {{ request()->routeIs(...$active) ? 'active' : '' }}" href="{{ route($route) }}">
+                <a class="nav-item {{ request()->routeIs(...$active) ? 'active' : '' }}" href="{{ route($route) }}" title="{{ $label }}">
                     <span class="nav-icon {{ $color }}"><i class="bi {{ $icon }}"></i></span>
                     <span class="nav-label">{{ $label }}</span>
                 </a>
@@ -110,6 +111,7 @@ foreach ($nav as [, $items]) {
 <div class="main">
     <header class="topbar">
         <button class="btn btn-icon d-lg-none" id="sidebarOpen" aria-label="Open menu"><i class="bi bi-list"></i></button>
+        <button class="btn btn-icon d-none d-lg-grid" id="sidebarToggle" aria-label="Collapse or expand the side menu" title="Collapse / expand menu"><i class="bi bi-layout-sidebar-inset"></i></button>
         @unless (request()->routeIs('dashboard'))
             <a href="@yield('back', route('dashboard'))" class="btn btn-back" id="backBtn" title="Back"><i class="bi bi-arrow-left"></i><span class="d-none d-sm-inline"> Back</span></a>
         @endunless

@@ -38,6 +38,9 @@ Route::middleware(['auth', 'role'])->group(function () {
     Route::post('imports/leave/upload', [ImportController::class, 'leaveUpload'])->name('imports.leave.upload');
     Route::get('imports/leave/preview', [ImportController::class, 'leavePreview'])->name('imports.leave.preview');
     Route::post('imports/leave', [ImportController::class, 'leaveStore'])->name('imports.leave.store');
+    Route::post('imports/salary/upload', [ImportController::class, 'salaryUpload'])->name('imports.salary.upload');
+    Route::get('imports/salary/preview', [ImportController::class, 'salaryPreview'])->name('imports.salary.preview');
+    Route::post('imports/salary', [ImportController::class, 'salaryStore'])->name('imports.salary.store');
     Route::post('imports/employees/upload', [ImportController::class, 'employeesUpload'])->name('imports.employees.upload');
     Route::post('imports/employees', [ImportController::class, 'employeesStore'])->name('imports.employees.store');
 
@@ -103,7 +106,8 @@ Route::middleware(['auth', 'role'])->group(function () {
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::put('settings/mail', [SettingController::class, 'updateMail'])->name('settings.mail');
         Route::post('settings/mail/test', [SettingController::class, 'testMail'])->name('settings.mail.test');
-        Route::post('settings/allowance-types', [SettingController::class, 'storeAllowanceType'])->name('settings.allowance-types.store');
+        Route::put('settings/register-columns', [SettingController::class, 'updateRegisterColumns'])->name('settings.register-columns');
+        Route::post('settings/allowance-types',[SettingController::class, 'storeAllowanceType'])->name('settings.allowance-types.store');
         Route::put('settings/allowance-types/{type}', [SettingController::class, 'updateAllowanceType'])->name('settings.allowance-types.update');
         Route::put('settings/leave-types/{type}', [SettingController::class, 'updateLeaveType'])->name('settings.leave-types.update');
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');

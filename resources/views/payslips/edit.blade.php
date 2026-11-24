@@ -30,6 +30,8 @@
                     <div class="col-6"><label class="form-label">Spl OT amount</label><input type="number" step="0.01" name="spl_ot_amount" class="form-control" value="{{ $f('spl_ot_amount') }}"></div>
                     <div class="col-6"><label class="form-label">Manager special</label><input type="number" step="0.01" name="manager_special" class="form-control" value="{{ $f('manager_special') }}"></div>
                     <div class="col-6"><label class="form-label">Factory special</label><input type="number" step="0.01" name="factory_special" class="form-control" value="{{ $f('factory_special') }}"></div>
+                    <div class="col-6"><label class="form-label">Other allowance</label><input type="number" step="0.01" min="0" name="other_allowance" class="form-control" value="{{ $f('other_allowance') }}"></div>
+                    <div class="col-6"><label class="form-label">General allowances</label><input type="number" step="0.01" min="0" name="general_allowance" class="form-control" value="{{ $f('general_allowance') }}"></div>
                 </div>
             </div>
         </div>
@@ -38,6 +40,7 @@
                 <div class="card-header">Deductions</div>
                 <div class="card-body row g-2">
                     <div class="col-6"><label class="form-label">TAX</label><input type="number" step="0.01" name="tax" class="form-control" value="{{ $f('tax') }}"></div>
+                    <div class="col-6"><label class="form-label">Food coupon</label><input type="number" step="0.01" min="0" name="food_coupon" class="form-control" value="{{ $f('food_coupon') }}"></div>
                     <div class="col-6"><label class="form-label">Advance</label><input type="number" step="0.01" name="advance" class="form-control" value="{{ $f('advance') }}"></div>
                     <div class="col-6"><label class="form-label">Other / misc</label><input type="number" step="0.01" name="other_deduction" class="form-control" value="{{ $f('other_deduction') }}"></div>
                     <div class="col-12">

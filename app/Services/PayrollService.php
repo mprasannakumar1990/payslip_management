@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\DB;
  *  basic earned     = per day x present (paid) days
  *  2nd / 3rd shift  = shift hours x shift rate (Rs 5 / Rs 6.875 per hour)
  *  OT pay           = per day / 8 x OT multiplier (1.5, driver 1.2) x OT hours
- *  gross            = basic earned + shift + OT + Spl OT + Manager special + Factory special
+ *  gross            = basic earned + shift + OT + Spl OT + Manager special + Factory special + Other + General allowance
  *  ESI              = gross x 0.75 %            (when applicable)
- *  PF               = 12 % of basic earned, max Rs 1,800 (when applicable)
- *  net              = gross - (ESI + PF + TAX + advance + other deductions)
+ *  PF               = 12 % of basic earned, max Rs 3,000 (setting pf_cap; was 1,800 in 2025)
+ *  net              = gross - (ESI + PF + TAX + food coupon + advance + other deductions)
  *  attendance bonus = one day's pay when there was no absence
  *  total payable    = net + allowances (rounded to the rupee)
  */
@@ -44,13 +44,14 @@ class PayrollService
         $p['ot_amount_manual'] = isset($p['ot_amount_manual']) && $p['ot_amount_manual'] !== '' ? (float) $p['ot_amount_manual'] : null;
         $p['ot_amount'] = $p['ot_amount_manual'] ?? round($perDay / $hoursPerDay * $p['ot_multiplier'] * $p['ot_hours'], 2);
         $p['total_addition'] = round($p['second_shift_amount'] + $p['third_shift_amount'] + $p['spl_ot_amount']
-            + $p['ot_amount'] + $p['manager_special'] + $p['factory_special'], 2);
+            + $p['ot_amount'] + $p['manager_special'] + $p['factory_special'] + ($p['other_allowance'] ?? 0) + ($p['general_allowance'] ?? 0), 2);
         $p['gross_salary'] = round($p['basic_earned'] + $p['total_addition'], 2);
 
         $p['esi'] = ! empty($p['esi_applicable']) ? round($p['gross_salary'] * Setting::num('esi_percent') / 100, 2) : 0;
         $p['pf'] = ! empty($p['pf_applicable'])
             ? min(round($p['basic_earned'] * Setting::num('pf_percent') / 100), Setting::num('pf_cap') ?: PHP_INT_MAX) : 0;
-        $p['total_deduction'] = round($p['esi'] + $p['pf'] + $p['tax'] + $p['advance'] + $p['other_deduction'], 2);
+        $p['food_coupon'] = (float) ($p['food_coupon'] ?? 0);
+        $p['total_deduction'] = round($p['esi'] + $p['pf'] + $p['tax'] + $p['advance'] + $p['food_coupon'] + $p['other_deduction'], 2);
         $p['net_salary'] = round($p['gross_salary'] - $p['total_deduction'], 2);
 
         if (! array_key_exists('attendance_bonus', $p) || $p['attendance_bonus'] === null) {
@@ -119,8 +120,11 @@ class PayrollService
             'spl_ot_amount' => 0,
             'manager_special' => $emp->manager_special,
             'factory_special' => $emp->factory_special,
+            'other_allowance' => $emp->other_allowance,
+            'general_allowance' => $emp->general_allowance,
             'tax' => $emp->monthly_tax,
             'advance' => 0,
+            'food_coupon' => 0,
             'other_deduction' => 0,
             'birthday_welfare' => 0,
             'attendance_bonus' => null,
@@ -159,7 +163,7 @@ class PayrollService
             foreach ($this->eligibleEmployees($run) as $emp) {
                 $in = $this->inputsFor($emp, $run);
                 if (! $reset && ($old = $existing[$emp->id] ?? null)) {
-                    foreach (['advance', 'other_deduction', 'spl_ot_amount', 'birthday_welfare', 'ot_amount_manual'] as $f) {
+                    foreach (['advance', 'food_coupon', 'other_deduction', 'spl_ot_amount', 'birthday_welfare', 'ot_amount_manual'] as $f) {
                         $in[$f] = $old->$f;
                     }
                     $in['remarks'] = $old->remarks;
@@ -178,8 +182,8 @@ class PayrollService
     {
         $emp = $slip->employee;
         $in = $slip->only(['working_days', 'present_days', 'absent_days', 'lop_days', 'basic_salary', 'second_shift_hours',
-            'third_shift_hours', 'ot_hours', 'ot_multiplier', 'ot_amount_manual', 'spl_ot_amount', 'manager_special', 'factory_special', 'tax',
-            'advance', 'other_deduction', 'birthday_welfare', 'attendance_bonus', 'allowances', 'remarks']);
+            'third_shift_hours', 'ot_hours', 'ot_multiplier', 'ot_amount_manual', 'spl_ot_amount', 'manager_special', 'factory_special', 'other_allowance', 'general_allowance', 'tax',
+            'advance', 'food_coupon', 'other_deduction', 'birthday_welfare', 'attendance_bonus', 'allowances', 'remarks']);
         $in = array_merge($in, $overrides);
         $in['esi_applicable'] = $overrides['esi_applicable'] ?? $slip->esi > 0 || $emp?->esi_applicable;
         $in['pf_applicable'] = $overrides['pf_applicable'] ?? $slip->pf > 0 || $emp?->pf_applicable;

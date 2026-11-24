@@ -21,8 +21,9 @@
         ['ot', 'Monthly OT sheet', 'bi-clock-history', 'grad-2', 'Shift hours and overtime for one month. Your OT workbook (one sheet per month, e.g. "Jan 2026") is accepted as it is — the matching month sheet is picked automatically.'],
         ['leave', 'Yearly leave register', 'bi-calendar2-week', 'grad-5', 'Leave days per employee per month for one year (Jan … Dec columns). Your "El Calculation" workbook with a sheet per year is accepted as it is.'],
         ['employees', 'Employees', 'bi-people', 'grad-1', 'New joiners, salary revisions, increments, email addresses and exits. Rows are matched by Emp ID: existing employees are updated, new IDs are created.'],
+        ['salary', 'Monthly salary sheet', 'bi-cash-stack', 'grad-4', 'The monthly “Salary Workings” workbook (October 2026 layout). Updates every employee’s salary structure and allowances, registers new joiners and saves that month’s payslips exactly as calculated in the sheet.'],
     ] as [$type, $title, $icon, $grad, $text])
-        <div class="col-lg-4">
+        <div class="col-md-6 col-xxl-3">
             <div class="card h-100">
                 <div class="{{ $grad }} text-white p-3 rounded-top d-flex align-items-center gap-3" style="border-radius:14px 14px 0 0">
                     <div class="fs-2"><i class="bi {{ $icon }}"></i></div>
@@ -43,15 +44,18 @@
                                 <select name="year" class="form-select form-select-sm">@foreach (year_options() as $y)<option @selected($y == $period->year)>{{ $y }}</option>@endforeach</select>
                                 <button class="btn btn-sm btn-success text-nowrap"><i class="bi bi-file-earmark-excel"></i> Template .xlsx</button>
                             </form>
+                        @elseif ($type === 'salary')
+                            <a href="{{ route('payroll.index') }}" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-excel"></i> Payroll → Export (same columns)</a>
+                            <div class="small text-muted mt-1">Use your usual salary workbook, or the salary register export of any month: it has the same columns.</div>
                         @else
                             <a href="{{ route('imports.template', 'employees') }}" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-excel"></i> Employee list / template .xlsx</a>
                         @endif
-                        <div class="small text-muted mt-1">Pre-filled with your employees, with drop-downs, number checks and an Instructions sheet.</div>
+                        @unless ($type === 'salary')<div class="small text-muted mt-1">Pre-filled with your employees, with drop-downs, number checks and an Instructions sheet.</div>@endunless
                     </div>
 
                     <form method="POST" action="{{ route('imports.'.$type.'.upload') }}" enctype="multipart/form-data" class="mt-auto" data-no-confirm data-busy="Reading and validating the file…">@csrf
                         <div class="small fw-semibold mb-2"><i class="bi bi-2-circle text-primary"></i> Upload the filled file</div>
-                        @if ($type === 'ot')
+                        @if ($type === 'ot' || $type === 'salary')
                             <label class="form-label">Month *</label>
                             <input type="month" name="period" value="{{ $period->format('Y-m') }}" class="form-control mb-2" required>
                         @elseif ($type === 'leave')
@@ -77,7 +81,7 @@
 <style>
     .xl-drop { position: relative; display: flex; align-items: center; gap: .8rem; padding: 1rem; border-radius: 14px; cursor: pointer; border: 2px dashed var(--c, #7c3aed);
         background: repeating-linear-gradient(135deg, var(--cs, #faf5ff), var(--cs, #faf5ff) 12px, #fff 12px, #fff 24px); transition: transform .2s, box-shadow .2s, background .3s; }
-    .xl-drop.drop-ot { --c: #ea580c; --cs: #fff7ed; } .xl-drop.drop-leave { --c: #059669; --cs: #ecfdf5; } .xl-drop.drop-employees { --c: #4f46e5; --cs: #eef2ff; }
+    .xl-drop.drop-ot { --c: #ea580c; --cs: #fff7ed; } .xl-drop.drop-leave { --c: #059669; --cs: #ecfdf5; } .xl-drop.drop-employees { --c: #4f46e5; --cs: #eef2ff; } .xl-drop.drop-salary { --c: #db2777; --cs: #fdf2f8; }
     .xl-drop:hover, .xl-drop.over { transform: translateY(-2px) scale(1.01); box-shadow: 0 10px 24px rgba(0,0,0,.08); }
     .xl-drop.over { background: var(--cs); }
     .xl-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }

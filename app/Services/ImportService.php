@@ -191,6 +191,129 @@ class ImportService
     }
 
     /** Employee master rows (the Employees export / template). */
+    /**
+     * Monthly salary sheet ("Salary Workings Oct 2026.xls" layout, or the app's own salary-register export).
+     * Columns are found by their headings, so new allowance columns (e.g. "Increment 2027") are picked up automatically.
+     * Headings left blank in the main row (Gross Salary, Net Salary) are taken from the group row above.
+     * Returns ['columns' => [field => heading], 'allowances' => [heading...], 'rows' => [...]].
+     */
+    public function parseSalarySheet(Spreadsheet $book, string $sheet): array
+    {
+        $rows = $this->rows($book, $sheet);
+        $norm = fn ($v) => strtolower(trim(preg_replace('/\s+/', ' ', (string) $v)));
+        $hi = null;
+        foreach (array_slice($rows, 0, 15, true) as $i => $r) {
+            $cells = array_map($norm, $r);
+            if (preg_grep('/^emp\.?\s*(id|code|no)/', $cells) && in_array('name', $cells, true) && preg_grep('/^basic/', $cells) && preg_grep('/^present/', $cells)) {
+                $hi = $i;
+                break;
+            }
+        }
+        if ($hi === null) {
+            throw new \RuntimeException('Could not find the salary header row (Emp ID NO, Name, Basic, Present …). Upload the monthly “Salary Workings” sheet or the salary register export.');
+        }
+        $head = $rows[$hi];
+        $group = $hi > 0 ? $rows[$hi - 1] : [];
+
+        $map = [];          // field => column index
+        $allow = [];        // allowance heading => column index
+        $headings = [];
+        $phase = 'info';    // info → basic → add → red → allow
+        foreach ($head as $c => $raw) {
+            $label = $norm($raw) !== '' ? $norm($raw) : $norm($group[$c] ?? '');
+            $orig = trim(preg_replace('/\s+/', ' ', (string) ($raw ?: ($group[$c] ?? ''))));
+            if ($label === '') {
+                continue;
+            }
+            $set = function (string $f) use (&$map, &$headings, $c, $orig) {
+                if (! isset($map[$f])) {
+                    $map[$f] = $c;
+                    $headings[$f] = $orig;
+                }
+            };
+            match (true) {
+                (bool) preg_match('/^emp\.?\s*(id|code|no)/', $label) => $set('emp_code'),
+                $label === 'name' => $set('name'),
+                $label === 'designation' => $set('designation'),
+                $label === 'grade' => $set('grade'),
+                (bool) preg_match('/^(epf|uan)/', $label) => $set('uan_no'),
+                (bool) preg_match('/^esic/', $label) => $set('esic_no'),
+                (bool) preg_match('/joining/', $label) => $set('date_of_joining'),
+                $label === 'basic' && $phase === 'info' => $set('basic_salary') ?? ($phase = 'basic'),
+                (bool) preg_match('/^(hr|per day)/', $label) => $set('per_day'),
+                (bool) preg_match('/^present/', $label) => $set('present_days'),
+                (bool) preg_match('/^absent/', $label) => $set('absent_days'),
+                $label === 'lop' => $set('lop_days'),
+                (bool) preg_match('/^total working/', $label) => $set('working_days'),
+                $label === 'total' && $phase === 'basic' && isset($map['working_days']) => $set('basic_earned') ?? ($phase = 'add'),
+                (bool) preg_match('/^basic earned/', $label) => $set('basic_earned') ?? ($phase = 'add'),
+                (bool) preg_match('/^2nd/', $label) => $set('second_shift_amount') ?? ($phase = 'add'),
+                (bool) preg_match('/^3rd/', $label) => $set('third_shift_amount'),
+                (bool) preg_match('/^spl\.?\s*ot/', $label) => $set('spl_ot_amount'),
+                $label === 'ot' || $label === 'ot hrs' => $set('ot_hours'),
+                (bool) preg_match('/^ot pay/', $label) => $set('ot_amount'),
+                (bool) preg_match('/^manager/', $label) => $set('manager_special'),
+                (bool) preg_match('/^factory/', $label) => $set('factory_special'),
+                (bool) preg_match('/^other allowance/', $label) => $set('other_allowance'),
+                (bool) preg_match('/^general allowance/', $label) => $set('general_allowance'),
+                ($label === 'total' && $phase === 'add') || $label === 'total addition' => $set('total_addition'),
+                (bool) preg_match('/^gross/', $label) => $set('gross_salary') ?? ($phase = 'red'),
+                $label === 'esi' => $set('esi'),
+                $label === 'pf' => $set('pf'),
+                $label === 'tax' => $set('tax'),
+                (bool) preg_match('/^food coupon/', $label) => $set('food_coupon'),
+                $label === 'advance' => $set('advance'),
+                (bool) preg_match('/^other ded/', $label) => $set('other_deduction'),
+                ($label === 'total' && $phase === 'red') || $label === 'total reduction' => $set('total_deduction'),
+                (bool) preg_match('/^net/', $label) => $set('net_salary') ?? ($phase = 'allow'),
+                $phase === 'allow' && (bool) preg_match('/^at+en+dance/', $label) => $set('attendance_bonus'),
+                $phase === 'allow' && (bool) preg_match('/^birthday/', $label) => $set('birthday_welfare'),
+                $phase === 'allow' && in_array($label, ['total', 'total allowance'], true) => $set('total_allowance') ?? ($phase = 'end'),
+                (bool) preg_match('/^total amount/', $label) => $set('total_amount'),
+                $label === 'remarks' => $set('remarks'),
+                $phase === 'allow' => $allow[$orig] = $c,
+                default => null,
+            };
+        }
+        foreach (['name', 'basic_salary', 'present_days', 'net_salary'] as $req) {
+            if (! isset($map[$req])) {
+                throw new \RuntimeException("The sheet has no “{$req}” column. Check that the header row is complete.");
+            }
+        }
+
+        $text = ['emp_code', 'name', 'designation', 'grade', 'uan_no', 'esic_no', 'remarks'];
+        $out = [];
+        foreach (array_slice($rows, $hi + 1, null, true) as $i => $r) {
+            $name = self::text($r[$map['name']] ?? '');
+            $code = isset($map['emp_code']) ? self::text($r[$map['emp_code']] ?? '') : '';
+            if ($name === '' || in_array(strtolower($name), ['name', 'total'], true)) {
+                if ($out && $code === '') {
+                    break; // the totals row / leave table below ends the salary rows
+                }
+                continue;
+            }
+            $row = ['line' => $i + 1, 'allowances' => []];
+            foreach ($map as $f => $c) {
+                $v = $r[$c] ?? null;
+                $row[$f] = in_array($f, $text, true) ? self::text($v) : ($f === 'date_of_joining' ? $v : self::num($v));
+            }
+            foreach (['uan_no', 'esic_no'] as $f) {
+                if (isset($row[$f])) {
+                    $row[$f] = preg_replace('/\.0+$/', '', $row[$f]);
+                    if (in_array($row[$f], ['0', '-'], true)) {
+                        $row[$f] = ''; // "0" in the sheet means "not filled in", never overwrite a real number with it
+                    }
+                }
+            }
+            foreach ($allow as $heading => $c) {
+                $row['allowances'][$heading] = self::num($r[$c] ?? 0);
+            }
+            $out[] = $row;
+        }
+
+        return ['columns' => $headings, 'allowances' => array_keys($allow), 'rows' => $out];
+    }
+
     public function parseEmployees(Spreadsheet $book, array $allowanceNames): array
     {
         $rows = $this->rows($book, $book->getActiveSheet()->getTitle());
@@ -198,7 +321,7 @@ class ImportService
             'emp_code' => '/^emp\.?\s*(id|code)$/', 'name' => '/^name$/', 'designation' => '/^designation$/', 'grade' => '/^grade$/',
             'ot_group' => '/^(plant|ot group|plant \/ group)/', 'date_of_joining' => '/joining/', 'date_of_exit' => '/exit/',
             'uan_no' => '/(epf|uan)/', 'esic_no' => '/esic/', 'basic_salary' => '/^basic/', 'manager_special' => '/manager/',
-            'factory_special' => '/factory/', 'monthly_tax' => '/tax/', 'pf_applicable' => '/^pf$/', 'esi_applicable' => '/^esi$/',
+            'factory_special' => '/factory/', 'other_allowance' => '/^other allowance/', 'general_allowance' => '/^general allowance/', 'monthly_tax' => '/tax/', 'pf_applicable' => '/^pf$/', 'esi_applicable' => '/^esi$/',
             'status' => '/^status$/', 'email' => '/^e-?mail/', 'phone' => '/^(phone|mobile no)/', 'bank_account_no' => '/account/',
             'bank_ifsc' => '/ifsc/', 'pan_no' => '/^pan/',
         ];
@@ -223,7 +346,7 @@ class ImportService
                     $r[$f] = self::text($row[$c[$f]] ?? '');
                 }
             }
-            foreach (['basic_salary', 'manager_special', 'factory_special', 'monthly_tax'] as $f) {
+            foreach (['basic_salary', 'manager_special', 'factory_special', 'other_allowance', 'general_allowance', 'monthly_tax'] as $f) {
                 if (isset($c[$f])) {
                     $r[$f] = self::num($row[$c[$f]] ?? 0);
                 }
@@ -263,9 +386,11 @@ class ImportService
         if (is_numeric($v) && $v > 1000) {
             return Carbon::instance(XlDate::excelToDateTimeObject((float) $v))->toDateString();
         }
-        foreach (['d-m-Y', 'd/m/Y', 'Y-m-d', 'd.m.Y', 'd-M-y', 'd-M-Y', 'j-M-y'] as $f) {
+        // tidy hand-typed dates such as "29-Nov -25" or "10-July -26"
+        $v = preg_replace('/\s*([-\/.])\s*/', '$1', trim((string) $v));
+        foreach (['d-m-Y', 'd/m/Y', 'Y-m-d', 'd.m.Y', 'd-M-y', 'd-M-Y', 'j-M-y', 'd-F-y', 'd-F-Y', 'j-F-y', 'j-F-Y'] as $f) {
             try {
-                $d = Carbon::createFromFormat('!'.$f, trim((string) $v));
+                $d = Carbon::createFromFormat('!'.$f, $v);
                 if ($d && $d->year > 1950) {
                     return $d->toDateString();
                 }

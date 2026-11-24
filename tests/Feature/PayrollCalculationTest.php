@@ -17,6 +17,13 @@ class PayrollCalculationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // the Nov 2025 sheet capped PF at Rs 1,800 (from Oct 2026 the cap is Rs 3,000)
+        \App\Models\Setting::put(['pf_cap' => '1800']);
+    }
+
     private function calc(array $overrides): array
     {
         return app(PayrollService::class)->calculate(array_merge([

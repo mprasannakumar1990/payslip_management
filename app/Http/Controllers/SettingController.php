@@ -16,6 +16,8 @@ class SettingController extends Controller
             's' => Setting::allValues(),
             'allowanceTypes' => AllowanceType::ordered()->get(),
             'leaveTypes' => LeaveType::ordered()->get(),
+            'registerCols' => \App\Support\SalaryLayout::registerColumns(),
+            'registerHidden' => \App\Support\SalaryLayout::hiddenByDefault(),
         ]);
     }
 
@@ -103,6 +105,18 @@ class SettingController extends Controller
         $where = Setting::mailConfigured() ? $to : 'the log file (storage/logs) — SMTP is not configured yet';
 
         return redirect()->route('settings.edit', ['tab' => 'email'])->with('success', "Test email sent to $where.");
+    }
+
+    /** Which salary-register columns are shown by default (each user can still change it with the Columns button). */
+    public function updateRegisterColumns(Request $request)
+    {
+        $all = array_column(\App\Support\SalaryLayout::registerColumns(), 0);
+        $visible = (array) $request->input('visible', []);
+        $hidden = array_values(array_diff($all, $visible, \App\Support\SalaryLayout::ALWAYS));
+        Setting::put(['register_hidden' => implode(',', $hidden)]);
+        ActivityLog::record('settings', 'Updated default salary register columns ('.(count($all) - count($hidden)).' of '.count($all).' shown)');
+
+        return back()->with('success', 'Default register columns saved: '.(count($all) - count($hidden)).' of '.count($all).' shown.');
     }
 
     public function storeAllowanceType(Request $request)
